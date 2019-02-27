@@ -17,7 +17,7 @@
 package auction_started
 
 type AuctionStartedModel struct {
-	Hash 			 string
+	Hash             string
 	RegistrationDate uint
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`

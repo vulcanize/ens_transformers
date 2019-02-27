@@ -17,7 +17,7 @@
 package abi_changed
 
 type AbiChangedModel struct {
-	Node 			 string
+	Node             string
 	ContentType      uint
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`

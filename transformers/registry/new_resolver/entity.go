@@ -22,8 +22,8 @@ import (
 )
 
 type NewResolverEntity struct {
-	Node 			 common.Hash
-	Resolver 	     common.Address
+	Node             common.Hash
+	Resolver         common.Address
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

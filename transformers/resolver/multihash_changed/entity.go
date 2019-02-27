@@ -22,8 +22,8 @@ import (
 )
 
 type MultihashChangedEntity struct {
-	Node 			 common.Hash
-	Hash   	 		 common.Hash
+	Node             common.Hash
+	Hash             common.Hash
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

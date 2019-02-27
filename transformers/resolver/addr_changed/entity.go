@@ -22,8 +22,8 @@ import (
 )
 
 type AddrChangedEntity struct {
-	Node 			 common.Hash
-	A   	 		 common.Address
+	Node             common.Hash
+	A                common.Address
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

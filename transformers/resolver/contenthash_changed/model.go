@@ -17,8 +17,8 @@
 package contenthash_changed
 
 type ContenthashChangedModel struct {
-	Node 			 string
-	Hash	         string
+	Node             string
+	Hash             string
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

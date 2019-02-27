@@ -22,9 +22,9 @@ import (
 )
 
 type NewOwnerEntity struct {
-	Node 			 common.Hash
-	Label 			 common.Hash
-	Owner 			 common.Address
+	Node             common.Hash
+	Label            common.Hash
+	Owner            common.Address
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

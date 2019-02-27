@@ -17,9 +17,9 @@
 package pubkey_changed
 
 type PubkeyChangedModel struct {
-	Node 			 string
-	X    	         string
-	Y				 string
+	Node             string
+	X                string
+	Y                string
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

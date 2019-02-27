@@ -17,9 +17,9 @@
 package new_owner
 
 type NewOwnerModel struct {
-	Node 			 string
-	Label 			 string
-	Owner 			 string
+	Node             string
+	Label            string
+	Owner            string
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

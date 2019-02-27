@@ -22,10 +22,10 @@ import (
 )
 
 type BidRevealedEntity struct {
-	Hash 			 common.Hash
-	Owner			 common.Address
-	Value 			 uint
-	Status 			 uint8
+	Hash             common.Hash
+	Owner            common.Address
+	Value            uint
+	Status           uint8
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log
