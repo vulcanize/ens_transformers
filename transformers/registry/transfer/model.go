@@ -17,8 +17,8 @@
 package transfer
 
 type TransferModel struct {
-	Node 			 string
-	Owner 		 	 string
+	Node             string
+	Owner            string
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

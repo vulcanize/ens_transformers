@@ -22,8 +22,8 @@ import (
 )
 
 type NewTTLEntity struct {
-	Node 			 common.Hash
-	Ttl 	         uint
+	Node             common.Hash
+	Ttl              uint
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

@@ -22,9 +22,9 @@ import (
 )
 
 type HashInvalidatedEntity struct {
-	Hash 			 common.Hash
-	Name			 string
-	Value 			 uint
+	Hash             common.Hash
+	Name             string
+	Value            uint
 	RegistrationDate uint
 	LogIndex         uint
 	TransactionIndex uint

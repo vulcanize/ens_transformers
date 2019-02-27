@@ -22,8 +22,8 @@ import (
 )
 
 type TransferEntity struct {
-	Node 			 common.Hash
-	Owner   	     common.Address
+	Node             common.Hash
+	Owner            common.Address
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

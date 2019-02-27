@@ -22,9 +22,9 @@ import (
 )
 
 type NewBidEntity struct {
-	Hash 			 common.Hash
-	Bidder 			 common.Address
-	Deposit			 uint
+	Hash             common.Hash
+	Bidder           common.Address
+	Deposit          uint
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

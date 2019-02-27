@@ -17,9 +17,9 @@
 package new_bid
 
 type NewBidModel struct {
-	Hash 			 string
-	Bidder 			 string
-	Deposit 	     uint
+	Hash             string
+	Bidder           string
+	Deposit          uint
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

@@ -17,9 +17,9 @@
 package hash_invalidated
 
 type HashInvalidatedModel struct {
-	Hash 			 string
-	Name			 string
-	Value 			 uint
+	Hash             string
+	Name             string
+	Value            uint
 	RegistrationDate uint
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`

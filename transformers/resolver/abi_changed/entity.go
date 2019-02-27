@@ -22,8 +22,8 @@ import (
 )
 
 type AbiChangedEntity struct {
-	Node 			 common.Hash
-	ContentType   	 uint
+	Node             common.Hash
+	ContentType      uint
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

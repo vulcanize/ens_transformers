@@ -22,9 +22,9 @@ import (
 )
 
 type HashRegisteredEntity struct {
-	Hash 			 common.Hash
-	Owner			 common.Address
-	Value 			 uint
+	Hash             common.Hash
+	Owner            common.Address
+	Value            uint
 	RegistrationDate uint
 	LogIndex         uint
 	TransactionIndex uint

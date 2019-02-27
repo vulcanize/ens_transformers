@@ -22,8 +22,8 @@ import (
 )
 
 type NameChangedEntity struct {
-	Node 			 common.Hash
-	Name   	 		 string
+	Node             common.Hash
+	Name             string
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

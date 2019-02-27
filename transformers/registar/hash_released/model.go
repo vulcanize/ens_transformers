@@ -17,8 +17,8 @@
 package hash_released
 
 type HashReleasedModel struct {
-	Hash 			 string
-	Value 			 uint
+	Hash             string
+	Value            uint
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

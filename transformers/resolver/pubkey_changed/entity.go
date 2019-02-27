@@ -22,9 +22,9 @@ import (
 )
 
 type PubkeyChangedEntity struct {
-	Node 			 common.Hash
-	X   	 		 common.Hash
-	Y 				 common.Hash
+	Node             common.Hash
+	X                common.Hash
+	Y                common.Hash
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

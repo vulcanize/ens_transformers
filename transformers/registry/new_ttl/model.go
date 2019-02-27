@@ -17,8 +17,8 @@
 package new_ttl
 
 type NewTTLModel struct {
-	Node 			 string
-	Ttl 		 	 uint
+	Node             string
+	Ttl              uint
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

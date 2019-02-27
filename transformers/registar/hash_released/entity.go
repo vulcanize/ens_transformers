@@ -22,8 +22,8 @@ import (
 )
 
 type HashReleasedEntity struct {
-	Hash 			 common.Hash
-	Value 			 uint
+	Hash             common.Hash
+	Value            uint
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

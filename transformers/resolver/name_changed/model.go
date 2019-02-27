@@ -17,8 +17,8 @@
 package name_changed
 
 type NameChangedModel struct {
-	Node 			 string
-	Name	         string
+	Node             string
+	Name             string
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

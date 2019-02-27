@@ -22,7 +22,7 @@ import (
 )
 
 type AuctionStartedEntity struct {
-	Hash 			 common.Hash
+	Hash             common.Hash
 	RegistrationDate uint
 	LogIndex         uint
 	TransactionIndex uint
