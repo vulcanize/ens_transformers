@@ -15,3 +15,69 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package new_ttl
+
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/vulcanizedb/pkg/geth"
+)
+
+type NewTtlConverter struct{}
+
+func (NewTtlConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
+	var entities []interface{}
+	for _, ethLog := range ethLogs {
+		entity := &NewTTLEntity{}
+		address := ethLog.Address
+		abi, err := geth.ParseAbi(contractAbi)
+		if err != nil {
+			return nil, err
+		}
+
+		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
+
+		err = contract.UnpackLog(entity, "NewTTL", ethLog)
+		if err != nil {
+			return nil, err
+		}
+
+		entity.Raw = ethLog
+		entity.LogIndex = ethLog.Index
+		entity.TransactionIndex = ethLog.TxIndex
+
+		entities = append(entities, *entity)
+	}
+
+	return entities, nil
+}
+
+func (converter NewTtlConverter) ToModels(entities []interface{}) ([]interface{}, error) {
+	var models []interface{}
+	for _, entity := range entities {
+		ttlEntity, ok := entity.(NewTTLEntity)
+		if !ok {
+			return nil, fmt.Errorf("entity of type %T, not %T", entity, NewTTLEntity{})
+		}
+
+		logIdx := ttlEntity.LogIndex
+		txIdx := ttlEntity.TransactionIndex
+		rawLog, err := json.Marshal(ttlEntity.Raw)
+		if err != nil {
+			return nil, err
+		}
+
+		model := NewTTLModel{
+			Node:             ttlEntity.Node.Hex(),
+			Ttl:              ttlEntity.Ttl.String(),
+			LogIndex:         logIdx,
+			TransactionIndex: txIdx,
+			Raw:              rawLog,
+		}
+		models = append(models, model)
+	}
+	return models, nil
+}

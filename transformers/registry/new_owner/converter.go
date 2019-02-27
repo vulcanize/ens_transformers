@@ -15,3 +15,70 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package new_owner
+
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/vulcanizedb/pkg/geth"
+)
+
+type NewOwnerConverter struct{}
+
+func (NewOwnerConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
+	var entities []interface{}
+	for _, ethLog := range ethLogs {
+		entity := &NewOwnerEntity{}
+		address := ethLog.Address
+		abi, err := geth.ParseAbi(contractAbi)
+		if err != nil {
+			return nil, err
+		}
+
+		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
+
+		err = contract.UnpackLog(entity, "NewOwner", ethLog)
+		if err != nil {
+			return nil, err
+		}
+
+		entity.Raw = ethLog
+		entity.LogIndex = ethLog.Index
+		entity.TransactionIndex = ethLog.TxIndex
+
+		entities = append(entities, *entity)
+	}
+
+	return entities, nil
+}
+
+func (converter NewOwnerConverter) ToModels(entities []interface{}) ([]interface{}, error) {
+	var models []interface{}
+	for _, entity := range entities {
+		ownerEntity, ok := entity.(NewOwnerEntity)
+		if !ok {
+			return nil, fmt.Errorf("entity of type %T, not %T", entity, NewOwnerEntity{})
+		}
+
+		logIdx := ownerEntity.LogIndex
+		txIdx := ownerEntity.TransactionIndex
+		rawLog, err := json.Marshal(ownerEntity.Raw)
+		if err != nil {
+			return nil, err
+		}
+
+		model := NewOwnerModel{
+			Node:             ownerEntity.Node.Hex(),
+			Label:            ownerEntity.Label.Hex(),
+			Owner:            ownerEntity.Owner.Hex(),
+			LogIndex:         logIdx,
+			TransactionIndex: txIdx,
+			Raw:              rawLog,
+		}
+		models = append(models, model)
+	}
+	return models, nil
+}

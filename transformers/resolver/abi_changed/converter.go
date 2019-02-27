@@ -15,3 +15,69 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package abi_changed
+
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/vulcanizedb/pkg/geth"
+)
+
+type AbiChangedConverter struct{}
+
+func (AbiChangedConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
+	var entities []interface{}
+	for _, ethLog := range ethLogs {
+		entity := &AbiChangedEntity{}
+		address := ethLog.Address
+		abi, err := geth.ParseAbi(contractAbi)
+		if err != nil {
+			return nil, err
+		}
+
+		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
+
+		err = contract.UnpackLog(entity, "AbiChanged", ethLog)
+		if err != nil {
+			return nil, err
+		}
+
+		entity.Raw = ethLog
+		entity.LogIndex = ethLog.Index
+		entity.TransactionIndex = ethLog.TxIndex
+
+		entities = append(entities, *entity)
+	}
+
+	return entities, nil
+}
+
+func (converter AbiChangedConverter) ToModels(entities []interface{}) ([]interface{}, error) {
+	var models []interface{}
+	for _, entity := range entities {
+		abiEntity, ok := entity.(AbiChangedEntity)
+		if !ok {
+			return nil, fmt.Errorf("entity of type %T, not %T", entity, AbiChangedEntity{})
+		}
+
+		logIdx := abiEntity.LogIndex
+		txIdx := abiEntity.TransactionIndex
+		rawLog, err := json.Marshal(abiEntity.Raw)
+		if err != nil {
+			return nil, err
+		}
+
+		model := AbiChangedModel{
+			Node:             abiEntity.Node.Hex(),
+			ContentType:      abiEntity.ContentType,
+			LogIndex:         logIdx,
+			TransactionIndex: txIdx,
+			Raw:              rawLog,
+		}
+		models = append(models, model)
+	}
+	return models, nil
+}

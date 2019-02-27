@@ -15,3 +15,69 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package hash_released
+
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/vulcanizedb/pkg/geth"
+)
+
+type HashReleasedConverter struct{}
+
+func (HashReleasedConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
+	var entities []interface{}
+	for _, ethLog := range ethLogs {
+		entity := &HashReleasedEntity{}
+		address := ethLog.Address
+		abi, err := geth.ParseAbi(contractAbi)
+		if err != nil {
+			return nil, err
+		}
+
+		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
+
+		err = contract.UnpackLog(entity, "HashReleased", ethLog)
+		if err != nil {
+			return nil, err
+		}
+
+		entity.Raw = ethLog
+		entity.LogIndex = ethLog.Index
+		entity.TransactionIndex = ethLog.TxIndex
+
+		entities = append(entities, *entity)
+	}
+
+	return entities, nil
+}
+
+func (converter HashReleasedConverter) ToModels(entities []interface{}) ([]interface{}, error) {
+	var models []interface{}
+	for _, entity := range entities {
+		hashEntity, ok := entity.(HashReleasedEntity)
+		if !ok {
+			return nil, fmt.Errorf("entity of type %T, not %T", entity, HashReleasedEntity{})
+		}
+
+		logIdx := hashEntity.LogIndex
+		txIdx := hashEntity.TransactionIndex
+		rawLog, err := json.Marshal(hashEntity.Raw)
+		if err != nil {
+			return nil, err
+		}
+
+		model := HashReleasedModel{
+			Hash:             hashEntity.Hash.Hex(),
+			Value:            hashEntity.Value.String(),
+			LogIndex:         logIdx,
+			TransactionIndex: txIdx,
+			Raw:              rawLog,
+		}
+		models = append(models, model)
+	}
+	return models, nil
+}
