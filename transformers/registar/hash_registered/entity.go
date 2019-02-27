@@ -19,12 +19,13 @@ package hash_registered
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"math/big"
 )
 
 type HashRegisteredEntity struct {
 	Hash             common.Hash
 	Owner            common.Address
-	Value            uint
+	Value            *big.Int
 	RegistrationDate uint
 	LogIndex         uint
 	TransactionIndex uint

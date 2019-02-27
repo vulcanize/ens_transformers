@@ -19,12 +19,13 @@ package new_bid
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"math/big"
 )
 
 type NewBidEntity struct {
 	Hash             common.Hash
 	Bidder           common.Address
-	Deposit          uint
+	Deposit          *big.Int
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

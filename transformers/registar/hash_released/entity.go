@@ -19,11 +19,12 @@ package hash_released
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"math/big"
 )
 
 type HashReleasedEntity struct {
 	Hash             common.Hash
-	Value            uint
+	Value            *big.Int
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

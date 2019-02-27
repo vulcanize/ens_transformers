@@ -19,12 +19,13 @@ package hash_invalidated
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"math/big"
 )
 
 type HashInvalidatedEntity struct {
 	Hash             common.Hash
 	Name             string
-	Value            uint
+	Value            *big.Int
 	RegistrationDate uint
 	LogIndex         uint
 	TransactionIndex uint

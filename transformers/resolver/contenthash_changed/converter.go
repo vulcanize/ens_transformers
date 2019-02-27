@@ -15,3 +15,69 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package contenthash_changed
+
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/vulcanizedb/pkg/geth"
+)
+
+type ContenthashChangedConverter struct{}
+
+func (ContenthashChangedConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
+	var entities []interface{}
+	for _, ethLog := range ethLogs {
+		entity := &ContenthashChangedEntity{}
+		address := ethLog.Address
+		abi, err := geth.ParseAbi(contractAbi)
+		if err != nil {
+			return nil, err
+		}
+
+		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
+
+		err = contract.UnpackLog(entity, "ContenthashChanged", ethLog)
+		if err != nil {
+			return nil, err
+		}
+
+		entity.Raw = ethLog
+		entity.LogIndex = ethLog.Index
+		entity.TransactionIndex = ethLog.TxIndex
+
+		entities = append(entities, *entity)
+	}
+
+	return entities, nil
+}
+
+func (converter ContenthashChangedConverter) ToModels(entities []interface{}) ([]interface{}, error) {
+	var models []interface{}
+	for _, entity := range entities {
+		contentEntity, ok := entity.(ContenthashChangedEntity)
+		if !ok {
+			return nil, fmt.Errorf("entity of type %T, not %T", entity, ContenthashChangedEntity{})
+		}
+
+		logIdx := contentEntity.LogIndex
+		txIdx := contentEntity.TransactionIndex
+		rawLog, err := json.Marshal(contentEntity.Raw)
+		if err != nil {
+			return nil, err
+		}
+
+		model := ContenthashChangedModel{
+			Node:             contentEntity.Node.Hex(),
+			Hash:             contentEntity.Hash.Hex(),
+			LogIndex:         logIdx,
+			TransactionIndex: txIdx,
+			Raw:              rawLog,
+		}
+		models = append(models, model)
+	}
+	return models, nil
+}

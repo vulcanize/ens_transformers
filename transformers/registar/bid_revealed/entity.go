@@ -19,12 +19,13 @@ package bid_revealed
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"math/big"
 )
 
 type BidRevealedEntity struct {
 	Hash             common.Hash
 	Owner            common.Address
-	Value            uint
+	Value            *big.Int
 	Status           uint8
 	LogIndex         uint
 	TransactionIndex uint

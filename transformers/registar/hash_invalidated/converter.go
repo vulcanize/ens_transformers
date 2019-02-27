@@ -15,3 +15,71 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package hash_invalidated
+
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/vulcanize/vulcanizedb/pkg/geth"
+)
+
+type HashInvalidatedConverter struct{}
+
+func (HashInvalidatedConverter) ToEntities(contractAbi string, ethLogs []types.Log) ([]interface{}, error) {
+	var entities []interface{}
+	for _, ethLog := range ethLogs {
+		entity := &HashInvalidatedEntity{}
+		address := ethLog.Address
+		abi, err := geth.ParseAbi(contractAbi)
+		if err != nil {
+			return nil, err
+		}
+
+		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
+
+		err = contract.UnpackLog(entity, "HashInvalidated", ethLog)
+		if err != nil {
+			return nil, err
+		}
+
+		entity.Raw = ethLog
+		entity.LogIndex = ethLog.Index
+		entity.TransactionIndex = ethLog.TxIndex
+
+		entities = append(entities, *entity)
+	}
+
+	return entities, nil
+}
+
+func (converter HashInvalidatedConverter) ToModels(entities []interface{}) ([]interface{}, error) {
+	var models []interface{}
+	for _, entity := range entities {
+		hashEntity, ok := entity.(HashInvalidatedEntity)
+		if !ok {
+			return nil, fmt.Errorf("entity of type %T, not %T", entity, HashInvalidatedEntity{})
+		}
+
+		logIdx := hashEntity.LogIndex
+		txIdx := hashEntity.TransactionIndex
+		rawLog, err := json.Marshal(hashEntity.Raw)
+		if err != nil {
+			return nil, err
+		}
+
+		model := HashInvalidatedModel{
+			Hash:             hashEntity.Hash.Hex(),
+			Name:             hashEntity.Name,
+			Value:            hashEntity.Value.String(),
+			RegistrationDate: hashEntity.RegistrationDate,
+			LogIndex:         logIdx,
+			TransactionIndex: txIdx,
+			Raw:              rawLog,
+		}
+		models = append(models, model)
+	}
+	return models, nil
+}

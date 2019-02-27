@@ -19,7 +19,7 @@ package bid_revealed
 type BidRevealedModel struct {
 	Hash             string
 	Owner            string
-	Value            uint
+	Value            string
 	Status           uint
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
