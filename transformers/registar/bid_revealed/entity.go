@@ -17,9 +17,10 @@
 package bid_revealed
 
 import (
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"math/big"
 )
 
 type BidRevealedEntity struct {

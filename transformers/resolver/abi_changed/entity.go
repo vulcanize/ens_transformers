@@ -17,13 +17,15 @@
 package abi_changed
 
 import (
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
 type AbiChangedEntity struct {
 	Node             common.Hash
-	ContentType      uint
+	ContentType      *big.Int
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log
