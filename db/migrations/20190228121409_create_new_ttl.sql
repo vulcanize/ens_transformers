@@ -3,7 +3,7 @@ CREATE TABLE ens.new_ttl (
   id                SERIAL PRIMARY KEY,
   header_id         INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   node              CHARACTER VARYING(66) NOT NULL,
-  ttl               BIGINT NOT NULL,
+  ttl               NUMERIC NOT NULL,
   tx_idx            INTEGER NOT NUll,
   log_idx           INTEGER NOT NUll,
   raw_log           JSONB,

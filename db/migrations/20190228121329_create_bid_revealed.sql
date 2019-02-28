@@ -4,7 +4,7 @@ CREATE TABLE ens.bid_revealed (
   header_id         INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   hash              CHARACTER VARYING(66) NOT NULL,
   owner             CHARACTER VARYING(66) NOT NULL,
-  value             BIGINT NOT NULL,
+  value             NUMERIC NOT NULL,
   status            INTEGER NOT NULL,
   tx_idx            INTEGER NOT NUll,
   log_idx           INTEGER NOT NUll,

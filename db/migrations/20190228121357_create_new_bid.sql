@@ -4,7 +4,7 @@ CREATE TABLE ens.new_bid (
   header_id         INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   hash              CHARACTER VARYING(66) NOT NULL,
   bidder            CHARACTER VARYING(66) NOT NULL,
-  deposit           BIGINT NOT NULL,
+  deposit           NUMERIC NOT NULL,
   tx_idx            INTEGER NOT NUll,
   log_idx           INTEGER NOT NUll,
   raw_log           JSONB,
