@@ -19,6 +19,7 @@ package geth
 import (
 	"errors"
 	"math/big"
+	"strconv"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -27,10 +28,13 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/geth/client"
 	vulcCommon "github.com/vulcanize/vulcanizedb/pkg/geth/converters/common"
 )
 
 var ErrEmptyHeader = errors.New("empty header returned over RPC")
+
+const MAX_BATCH_SIZE = 100
 
 type BlockChain struct {
 	blockConverter  vulcCommon.BlockConverter
@@ -65,12 +69,56 @@ func (blockChain *BlockChain) GetHeaderByNumber(blockNumber int64) (header core.
 	return blockChain.getPOWHeader(blockNumber)
 }
 
+func (blockChain *BlockChain) GetHeaderByNumbers(blockNumbers []int64) (header []core.Header, err error) {
+	if blockChain.node.NetworkID == core.KOVAN_NETWORK_ID {
+		return blockChain.getPOAHeaders(blockNumbers)
+	}
+	return blockChain.getPOWHeaders(blockNumbers)
+}
+
 func (blockChain *BlockChain) getPOWHeader(blockNumber int64) (header core.Header, err error) {
 	gethHeader, err := blockChain.ethClient.HeaderByNumber(context.Background(), big.NewInt(blockNumber))
 	if err != nil {
 		return header, err
 	}
-	return blockChain.headerConverter.Convert(gethHeader, gethHeader.Hash().String())
+	return blockChain.headerConverter.Convert(gethHeader, gethHeader.Hash().String()), nil
+}
+
+func (blockChain *BlockChain) getPOWHeaders(blockNumbers []int64) (headers []core.Header, err error) {
+	var batch []client.BatchElem
+	var POWHeaders [MAX_BATCH_SIZE]types.Header
+	includeTransactions := false
+
+	for index, blockNumber := range blockNumbers {
+
+		if index >= MAX_BATCH_SIZE {
+			break
+		}
+
+		blockNumberArg := hexutil.EncodeBig(big.NewInt(blockNumber))
+
+		batchElem := client.BatchElem{
+			Method: "eth_getBlockByNumber",
+			Result: &POWHeaders[index],
+			Args:   []interface{}{blockNumberArg, includeTransactions},
+		}
+
+		batch = append(batch, batchElem)
+	}
+
+	err = blockChain.rpcClient.BatchCall(batch)
+	if err != nil {
+		return headers, err
+	}
+
+	for _, POWHeader := range POWHeaders {
+		if POWHeader.Number != nil {
+			header := blockChain.headerConverter.Convert(&POWHeader, POWHeader.Hash().String())
+			headers = append(headers, header)
+		}
+	}
+
+	return headers, err
 }
 
 func (blockChain *BlockChain) getPOAHeader(blockNumber int64) (header core.Header, err error) {
@@ -98,7 +146,62 @@ func (blockChain *BlockChain) getPOAHeader(blockNumber int64) (header core.Heade
 		GasUsed:     uint64(POAHeader.GasUsed),
 		Time:        POAHeader.Time.ToInt(),
 		Extra:       POAHeader.Extra,
-	}, POAHeader.Hash.String())
+	}, POAHeader.Hash.String()), nil
+}
+
+func (blockChain *BlockChain) getPOAHeaders(blockNumbers []int64) (headers []core.Header, err error) {
+
+	var batch []client.BatchElem
+	var POAHeaders [MAX_BATCH_SIZE]core.POAHeader
+	includeTransactions := false
+
+	for index, blockNumber := range blockNumbers {
+
+		if index >= MAX_BATCH_SIZE {
+			break
+		}
+
+		blockNumberArg := hexutil.EncodeBig(big.NewInt(blockNumber))
+
+		batchElem := client.BatchElem{
+			Method: "eth_getBlockByNumber",
+			Result: &POAHeaders[index],
+			Args:   []interface{}{blockNumberArg, includeTransactions},
+		}
+
+		batch = append(batch, batchElem)
+	}
+
+	err = blockChain.rpcClient.BatchCall(batch)
+	if err != nil {
+		return headers, err
+	}
+
+	for _, POAHeader := range POAHeaders {
+		var header core.Header
+		//Header.Number of the newest block will return nil.
+		if _, err := strconv.ParseUint(POAHeader.Number.ToInt().String(), 16, 64); err == nil {
+			header = blockChain.headerConverter.Convert(&types.Header{
+				ParentHash:  POAHeader.ParentHash,
+				UncleHash:   POAHeader.UncleHash,
+				Coinbase:    POAHeader.Coinbase,
+				Root:        POAHeader.Root,
+				TxHash:      POAHeader.TxHash,
+				ReceiptHash: POAHeader.ReceiptHash,
+				Bloom:       POAHeader.Bloom,
+				Difficulty:  POAHeader.Difficulty.ToInt(),
+				Number:      POAHeader.Number.ToInt(),
+				GasLimit:    uint64(POAHeader.GasLimit),
+				GasUsed:     uint64(POAHeader.GasUsed),
+				Time:        POAHeader.Time.ToInt(),
+				Extra:       POAHeader.Extra,
+			}, POAHeader.Hash.String())
+
+			headers = append(headers, header)
+		}
+	}
+
+	return headers, err
 }
 
 func (blockChain *BlockChain) GetLogs(contract core.Contract, startingBlockNumber, endingBlockNumber *big.Int) ([]core.Log, error) {
@@ -128,9 +231,9 @@ func (blockChain *BlockChain) GetEthLogsWithCustomQuery(query ethereum.FilterQue
 	return gethLogs, nil
 }
 
-func (blockChain *BlockChain) LastBlock() *big.Int {
-	block, _ := blockChain.ethClient.HeaderByNumber(context.Background(), nil)
-	return block.Number
+func (blockChain *BlockChain) LastBlock() (*big.Int, error) {
+	block, err := blockChain.ethClient.HeaderByNumber(context.Background(), nil)
+	return block.Number, err
 }
 
 func (blockChain *BlockChain) Node() core.Node {
