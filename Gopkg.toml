@@ -25,18 +25,23 @@
 #   unused-packages = true
 
 
+[[override]]
+  name = "gopkg.in/fsnotify.v1"
+  source = "gopkg.in/fsnotify/fsnotify.v1"
+
+[[constraint]]
+  name = "github.com/vulcanize/vulcanizedb"
+  source = "github.com/vulcanize/maker-vulcanizedb"
+  branch = "compose_and_execute"
+
+[[constraint]]
+  name = "github.com/sirupsen/logrus"
+  version = "1.2.0"
+
+[[constraint]]
+  name = "github.com/onsi/ginkgo"
+  version = "1.4.0"
+
 [[constraint]]
   name = "github.com/ethereum/go-ethereum"
-  version = "1.8.23"
-
-[[constraint]]
-  name = "github.com/spf13/viper"
-  version = "1.3.1"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/vulcanize/vulcanizedb"
-
-[prune]
-  go-tests = true
-  unused-packages = true
+  version = "1.8.21"
