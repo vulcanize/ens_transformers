@@ -15,3 +15,40 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package mocks
+
+import (
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+)
+
+type MockLogFetcher struct {
+	FetchedContractAddresses [][]common.Address
+	FetchedTopics            [][]common.Hash
+	FetchedBlocks            []int64
+	fetcherError             error
+	FetchedLogs              []types.Log
+	SetBcCalled              bool
+	FetchLogsCalled          bool
+}
+
+func (mlf *MockLogFetcher) FetchLogs(contractAddresses []common.Address, topics []common.Hash, header core.Header) ([]types.Log, error) {
+	mlf.FetchedContractAddresses = append(mlf.FetchedContractAddresses, contractAddresses)
+	mlf.FetchedTopics = [][]common.Hash{topics}
+	mlf.FetchedBlocks = append(mlf.FetchedBlocks, header.BlockNumber)
+	mlf.FetchLogsCalled = true
+
+	return mlf.FetchedLogs, mlf.fetcherError
+}
+
+func (mlf *MockLogFetcher) SetBC(bc core.BlockChain) {
+	mlf.SetBcCalled = true
+}
+
+func (mlf *MockLogFetcher) SetFetcherError(err error) {
+	mlf.fetcherError = err
+}
+
+func (mlf *MockLogFetcher) SetFetchedLogs(logs []types.Log) {
+	mlf.FetchedLogs = logs
+}

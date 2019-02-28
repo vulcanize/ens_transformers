@@ -4,7 +4,7 @@ CREATE TABLE ens.hash_registered (
   header_id         INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   hash              CHARACTER VARYING(66) NOT NULL,
   owner             CHARACTER VARYING(66) NOT NULL,
-  value             BIGINT NOT NULL,
+  value             NUMERIC NOT NULL,
   registration_date INTEGER NOT NULL,
   tx_idx            INTEGER NOT NUll,
   log_idx           INTEGER NOT NUll,
