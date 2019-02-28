@@ -72,7 +72,7 @@ func (converter AbiChangedConverter) ToModels(entities []interface{}) ([]interfa
 
 		model := AbiChangedModel{
 			Node:             abiEntity.Node.Hex(),
-			ContentType:      abiEntity.ContentType,
+			ContentType:      abiEntity.ContentType.String(),
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,

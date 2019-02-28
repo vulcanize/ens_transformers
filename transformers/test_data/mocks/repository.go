@@ -14,19 +14,4 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package hash_released
-
-import (
-	"math/big"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-)
-
-type HashReleasedEntity struct {
-	Hash             common.Hash
-	Value            *big.Int
-	LogIndex         uint
-	TransactionIndex uint
-	Raw              types.Log
-}
+package mocks
