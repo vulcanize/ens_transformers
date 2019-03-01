@@ -15,3 +15,77 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package content_changed
+
+import (
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
+
+	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
+	"github.com/vulcanize/vulcanizedb/pkg/core"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+
+	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
+)
+
+type ContentChangedRepository struct {
+	db *postgres.DB
+}
+
+func (repository *ContentChangedRepository) SetDB(db *postgres.DB) {
+	repository.db = db
+}
+
+func (repository ContentChangedRepository) Create(headerID int64, models []interface{}) error {
+	tx, dBaseErr := repository.db.Begin()
+	if dBaseErr != nil {
+		return dBaseErr
+	}
+	for _, model := range models {
+		contentModel, ok := model.(ContentChangedModel)
+		if !ok {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Error("failed to rollback ", rollbackErr)
+			}
+			return fmt.Errorf("model of type %T, not %T", model, ContentChangedModel{})
+		}
+
+		_, execErr := tx.Exec(
+			`INSERT into ens.content_changed (header_id, node, hash, log_idx, tx_idx, raw_log)
+        			VALUES($1, $2, $3, $4, $5, $6)
+					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET node = $2, hash = $3, raw_log = $6;`,
+			headerID, contentModel.Node, contentModel.Hash, contentModel.LogIndex, contentModel.TransactionIndex, contentModel.Raw,
+		)
+		if execErr != nil {
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Error("failed to rollback ", rollbackErr)
+			}
+			return execErr
+		}
+	}
+
+	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.ContentChangedChecked)
+	if checkHeaderErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			log.Error("failed to rollback ", rollbackErr)
+		}
+		return checkHeaderErr
+	}
+
+	return tx.Commit()
+}
+
+func (repository ContentChangedRepository) MarkHeaderChecked(headerID int64) error {
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.ContentChangedChecked)
+}
+
+func (repository ContentChangedRepository) MissingHeaders(startingBlockNumber int64, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.ContentChangedChecked)
+}
+
+func (repository ContentChangedRepository) RecheckHeaders(startingBlockNumber int64, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.ContentChangedChecked)
+}

@@ -25,25 +25,24 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 
-	"github.com/vulcanize/ens_transformers/transformers/shared"
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 )
 
-type BiteRepository struct {
+type AuctionStartedRepository struct {
 	db *postgres.DB
 }
 
-func (repository *BiteRepository) SetDB(db *postgres.DB) {
+func (repository *AuctionStartedRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository BiteRepository) Create(headerID int64, models []interface{}) error {
+func (repository AuctionStartedRepository) Create(headerID int64, models []interface{}) error {
 	tx, dBaseErr := repository.db.Begin()
 	if dBaseErr != nil {
 		return dBaseErr
 	}
 	for _, model := range models {
-		biteModel, ok := model.(AuctionStartedModel)
+		auctionModel, ok := model.(AuctionStartedModel)
 		if !ok {
 			rollbackErr := tx.Rollback()
 			if rollbackErr != nil {
@@ -53,10 +52,10 @@ func (repository BiteRepository) Create(headerID int64, models []interface{}) er
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into maker.bite (header_id, ilk, urn, ink, art, iart, tab, nflip, log_idx, tx_idx, raw_log)
-        			VALUES($1, $2, $3, $4::NUMERIC, $5::NUMERIC, $6::NUMERIC, $7::NUMERIC, $8::NUMERIC, $9, $10, $11)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET ilk = $2, urn = $3, ink = $4, art = $5, iart = $6, tab = $7, nflip = $8, raw_log = $11;`,
-			headerID, ilkID, biteModel.Urn, biteModel.Ink, biteModel.Art, biteModel.IArt, biteModel.Tab, biteModel.NFlip, biteModel.LogIndex, biteModel.TransactionIndex, biteModel.Raw,
+			`INSERT into ens.auction_started (header_id, hash, registration_date, log_idx, tx_idx, raw_log)
+        			VALUES($1, $2, $3, $4, $5, $6)
+					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET hash = $2, registration_date = $3, raw_log = $6;`,
+			headerID, auctionModel.Hash, auctionModel.RegistrationDate, auctionModel.LogIndex, auctionModel.TransactionIndex, auctionModel.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
@@ -67,7 +66,7 @@ func (repository BiteRepository) Create(headerID int64, models []interface{}) er
 		}
 	}
 
-	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.BiteChecked)
+	checkHeaderErr := repo.MarkHeaderCheckedInTransaction(headerID, tx, constants.AuctionStartedChecked)
 	if checkHeaderErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -79,14 +78,14 @@ func (repository BiteRepository) Create(headerID int64, models []interface{}) er
 	return tx.Commit()
 }
 
-func (repository BiteRepository) MarkHeaderChecked(headerID int64) error {
-	return repo.MarkHeaderChecked(headerID, repository.db, constants.BiteChecked)
+func (repository AuctionStartedRepository) MarkHeaderChecked(headerID int64) error {
+	return repo.MarkHeaderChecked(headerID, repository.db, constants.AuctionStartedChecked)
 }
 
-func (repository BiteRepository) MissingHeaders(startingBlockNumber int64, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.BiteChecked)
+func (repository AuctionStartedRepository) MissingHeaders(startingBlockNumber int64, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.MissingHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.AuctionStartedChecked)
 }
 
-func (repository BiteRepository) RecheckHeaders(startingBlockNumber int64, endingBlockNumber int64) ([]core.Header, error) {
-	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.BiteChecked)
+func (repository AuctionStartedRepository) RecheckHeaders(startingBlockNumber int64, endingBlockNumber int64) ([]core.Header, error) {
+	return repo.RecheckHeaders(startingBlockNumber, endingBlockNumber, repository.db, constants.AuctionStartedChecked)
 }
