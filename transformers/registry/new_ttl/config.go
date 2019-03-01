@@ -24,7 +24,7 @@ import (
 
 func GetNewTtlConfig() shared_t.TransformerConfig {
 	return shared_t.TransformerConfig{
-		TransformerName:     constants.NewTtlLaebl,
+		TransformerName:     constants.NewTtlLabel,
 		ContractAddresses:   []string{constants.RegistryContractAddress()},
 		ContractAbi:         constants.RegistryABI(),
 		Topic:               constants.GetNewTtlSignature(),

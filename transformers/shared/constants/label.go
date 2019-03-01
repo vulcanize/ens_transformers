@@ -28,7 +28,7 @@ const (
 	// Registry
 	NewOwnerLabel    = "newOwner"
 	NewResolverLabel = "newResolver"
-	NewTtlLaebl      = "newTTL"
+	NewTtlLabel      = "newTTL"
 	TransferLabel    = "transfer"
 
 	// Resolver
