@@ -52,10 +52,10 @@ func (repository NameChangedRepository) Create(headerID int64, models []interfac
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into ens.name_changed (header_id, node, name, log_idx, tx_idx, raw_log)
-        			VALUES($1, $2, $3, $4, $5, $6)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET node = $2, name = $3, raw_log = $6;`,
-			headerID, nameModel.Node, nameModel.Name, nameModel.LogIndex, nameModel.TransactionIndex, nameModel.Raw,
+			`INSERT into ens.name_changed (header_id, resolver, node, name, log_idx, tx_idx, raw_log)
+        			VALUES($1, $2, $3, $4, $5, $6, $7)
+					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET resolver = $2, node = $3, name = $4, raw_log = $7;`,
+			headerID, nameModel.Resolver, nameModel.Node, nameModel.Name, nameModel.LogIndex, nameModel.TransactionIndex, nameModel.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()

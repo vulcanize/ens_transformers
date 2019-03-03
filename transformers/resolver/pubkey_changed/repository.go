@@ -52,10 +52,10 @@ func (repository PubkeyChangedRepository) Create(headerID int64, models []interf
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into ens.pubkey_changed (header_id, node, x, y, log_idx, tx_idx, raw_log)
-        			VALUES($1, $2, $3, $4, $5, $6, $7)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET node = $2, x = $3, y = $4, raw_log = $7;`,
-			headerID, pubkeyModel.Node, pubkeyModel.X, pubkeyModel.Y, pubkeyModel.LogIndex, pubkeyModel.TransactionIndex, pubkeyModel.Raw,
+			`INSERT into ens.pubkey_changed (header_id, resolver, node, x, y, log_idx, tx_idx, raw_log)
+        			VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET resolver = $2, node = $3, x = $4, y = $5, raw_log = $8;`,
+			headerID, pubkeyModel.Resolver, pubkeyModel.Node, pubkeyModel.X, pubkeyModel.Y, pubkeyModel.LogIndex, pubkeyModel.TransactionIndex, pubkeyModel.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()

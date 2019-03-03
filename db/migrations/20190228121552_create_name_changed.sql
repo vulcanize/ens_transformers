@@ -2,6 +2,7 @@
 CREATE TABLE ens.name_changed (
   id                SERIAL PRIMARY KEY,
   header_id         INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+  resolver          CHARACTER VARYING(66) NOT NULL,
   node              CHARACTER VARYING(66) NOT NULL,
   name              TEXT NOT NULL,
   tx_idx            INTEGER NOT NUll,

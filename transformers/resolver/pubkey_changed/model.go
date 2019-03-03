@@ -17,6 +17,7 @@
 package pubkey_changed
 
 type PubkeyChangedModel struct {
+	Resolver         string
 	Node             string
 	X                string
 	Y                string

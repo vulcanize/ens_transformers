@@ -17,6 +17,7 @@
 package abi_changed
 
 type AbiChangedModel struct {
+	Resolver         string
 	Node             string
 	ContentType      string
 	LogIndex         uint   `db:"log_idx"`

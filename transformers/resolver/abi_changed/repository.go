@@ -52,10 +52,10 @@ func (repository AbiChangedRepository) Create(headerID int64, models []interface
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into ens.abi_changed (header_id, node, content_type, log_idx, tx_idx, raw_log)
-        			VALUES($1, $2, $3, $4, $5, $6)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET node = $2, content_type = $3, raw_log = $6;`,
-			headerID, abiModel.Node, abiModel.ContentType, abiModel.LogIndex, abiModel.TransactionIndex, abiModel.Raw,
+			`INSERT into ens.abi_changed (header_id, resolver, node, content_type, log_idx, tx_idx, raw_log)
+        			VALUES($1, $2, $3, $4, $5, $6, $7)
+					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET resolver = $2, node = $3, content_type = $4, raw_log = $7;`,
+			headerID, abiModel.Resolver, abiModel.Node, abiModel.ContentType, abiModel.LogIndex, abiModel.TransactionIndex, abiModel.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()

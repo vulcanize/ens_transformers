@@ -32,13 +32,13 @@ func (MultihashChangedConverter) ToEntities(contractAbi string, ethLogs []types.
 	var entities []interface{}
 	for _, ethLog := range ethLogs {
 		entity := &MultihashChangedEntity{}
-		address := ethLog.Address
+		entity.Resolver = ethLog.Address
 		abi, err := geth.ParseAbi(contractAbi)
 		if err != nil {
 			return nil, err
 		}
 
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
+		contract := bind.NewBoundContract(entity.Resolver, abi, nil, nil, nil)
 
 		err = contract.UnpackLog(entity, "MultihashChanged", ethLog)
 		if err != nil {
@@ -71,6 +71,7 @@ func (converter MultihashChangedConverter) ToModels(entities []interface{}) ([]i
 		}
 
 		model := MultihashChangedModel{
+			Resolver:         multiEntity.Resolver.Hex(),
 			Node:             multiEntity.Node.Hex(),
 			Hash:             multiEntity.Hash.Hex(),
 			LogIndex:         logIdx,

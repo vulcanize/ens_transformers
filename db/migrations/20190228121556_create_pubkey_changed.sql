@@ -2,6 +2,7 @@
 CREATE TABLE ens.pubkey_changed (
   id                SERIAL PRIMARY KEY,
   header_id         INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+  resolver          CHARACTER VARYING(66) NOT NULL,
   node              CHARACTER VARYING(66) NOT NULL,
   x                 CHARACTER VARYING(66) NOT NULL,
   y                 CHARACTER VARYING(66) NOT NULL,

@@ -22,6 +22,7 @@ import (
 )
 
 type PubkeyChangedEntity struct {
+	Resolver         common.Address
 	Node             common.Hash
 	X                common.Hash
 	Y                common.Hash

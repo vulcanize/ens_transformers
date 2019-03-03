@@ -52,10 +52,10 @@ func (repository AddrChangedRepository) Create(headerID int64, models []interfac
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into ens.addr_changed (header_id, node, address, log_idx, tx_idx, raw_log)
-        			VALUES($1, $2, $3, $4, $5, $6)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET node = $2, address = $3, raw_log = $6;`,
-			headerID, addrModel.Node, addrModel.Address, addrModel.LogIndex, addrModel.TransactionIndex, addrModel.Raw,
+			`INSERT into ens.addr_changed (header_id, resolver, node, address, log_idx, tx_idx, raw_log)
+        			VALUES($1, $2, $3, $4, $5, $6, $7)
+					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET resolver = $2, node = $3, address = $4, raw_log = $7;`,
+			headerID, addrModel.Resolver, addrModel.Node, addrModel.Address, addrModel.LogIndex, addrModel.TransactionIndex, addrModel.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()
