@@ -17,6 +17,7 @@
 package multihash_changed
 
 type MultihashChangedModel struct {
+	Resolver         string
 	Node             string
 	Hash             string
 	LogIndex         uint   `db:"log_idx"`

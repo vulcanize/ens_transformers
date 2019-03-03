@@ -17,6 +17,7 @@
 package name_changed
 
 type NameChangedModel struct {
+	Resolver         string
 	Node             string
 	Name             string
 	LogIndex         uint   `db:"log_idx"`

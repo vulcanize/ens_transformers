@@ -17,6 +17,7 @@
 package addr_changed
 
 type AddrChangedModel struct {
+	Resolver         string
 	Node             string
 	Address          string
 	LogIndex         uint   `db:"log_idx"`

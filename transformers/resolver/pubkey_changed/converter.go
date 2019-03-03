@@ -32,13 +32,13 @@ func (PubkeyChangedConverter) ToEntities(contractAbi string, ethLogs []types.Log
 	var entities []interface{}
 	for _, ethLog := range ethLogs {
 		entity := &PubkeyChangedEntity{}
-		address := ethLog.Address
+		entity.Resolver = ethLog.Address
 		abi, err := geth.ParseAbi(contractAbi)
 		if err != nil {
 			return nil, err
 		}
 
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
+		contract := bind.NewBoundContract(entity.Resolver, abi, nil, nil, nil)
 
 		err = contract.UnpackLog(entity, "PubkeyChanged", ethLog)
 		if err != nil {
@@ -58,22 +58,23 @@ func (PubkeyChangedConverter) ToEntities(contractAbi string, ethLogs []types.Log
 func (converter PubkeyChangedConverter) ToModels(entities []interface{}) ([]interface{}, error) {
 	var models []interface{}
 	for _, entity := range entities {
-		multiEntity, ok := entity.(PubkeyChangedEntity)
+		pubkeyEntity, ok := entity.(PubkeyChangedEntity)
 		if !ok {
 			return nil, fmt.Errorf("entity of type %T, not %T", entity, PubkeyChangedEntity{})
 		}
 
-		logIdx := multiEntity.LogIndex
-		txIdx := multiEntity.TransactionIndex
-		rawLog, err := json.Marshal(multiEntity.Raw)
+		logIdx := pubkeyEntity.LogIndex
+		txIdx := pubkeyEntity.TransactionIndex
+		rawLog, err := json.Marshal(pubkeyEntity.Raw)
 		if err != nil {
 			return nil, err
 		}
 
 		model := PubkeyChangedModel{
-			Node:             multiEntity.Node.Hex(),
-			X:                multiEntity.X.Hex(),
-			Y:                multiEntity.Y.Hex(),
+			Resolver:         pubkeyEntity.Resolver.Hex(),
+			Node:             pubkeyEntity.Node.Hex(),
+			X:                pubkeyEntity.X.Hex(),
+			Y:                pubkeyEntity.Y.Hex(),
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,

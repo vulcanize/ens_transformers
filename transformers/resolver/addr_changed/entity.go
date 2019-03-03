@@ -22,6 +22,7 @@ import (
 )
 
 type AddrChangedEntity struct {
+	Resolver         common.Address
 	Node             common.Hash
 	A                common.Address
 	LogIndex         uint

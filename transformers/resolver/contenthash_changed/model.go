@@ -17,6 +17,7 @@
 package contenthash_changed
 
 type ContenthashChangedModel struct {
+	Resolver         string
 	Node             string
 	Hash             string
 	LogIndex         uint   `db:"log_idx"`

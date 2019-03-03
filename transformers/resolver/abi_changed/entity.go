@@ -24,6 +24,7 @@ import (
 )
 
 type AbiChangedEntity struct {
+	Resolver         common.Address
 	Node             common.Hash
 	ContentType      *big.Int
 	LogIndex         uint

@@ -22,6 +22,7 @@ import (
 )
 
 type ContentChangedEntity struct {
+	Resolver         common.Address
 	Node             common.Hash
 	Hash             common.Hash
 	LogIndex         uint

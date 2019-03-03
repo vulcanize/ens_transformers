@@ -32,13 +32,13 @@ func (ContenthashChangedConverter) ToEntities(contractAbi string, ethLogs []type
 	var entities []interface{}
 	for _, ethLog := range ethLogs {
 		entity := &ContenthashChangedEntity{}
-		address := ethLog.Address
+		entity.Resolver = ethLog.Address
 		abi, err := geth.ParseAbi(contractAbi)
 		if err != nil {
 			return nil, err
 		}
 
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
+		contract := bind.NewBoundContract(entity.Resolver, abi, nil, nil, nil)
 
 		err = contract.UnpackLog(entity, "ContenthashChanged", ethLog)
 		if err != nil {
@@ -71,6 +71,7 @@ func (converter ContenthashChangedConverter) ToModels(entities []interface{}) ([
 		}
 
 		model := ContenthashChangedModel{
+			Resolver:         contentEntity.Resolver.Hex(),
 			Node:             contentEntity.Node.Hex(),
 			Hash:             contentEntity.Hash.Hex(),
 			LogIndex:         logIdx,

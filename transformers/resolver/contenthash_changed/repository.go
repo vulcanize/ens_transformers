@@ -52,10 +52,10 @@ func (repository ContenthashChangedRepository) Create(headerID int64, models []i
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into ens.contenthash_changed (header_id, node, hash, log_idx, tx_idx, raw_log)
-        			VALUES($1, $2, $3, $4, $5, $6)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET node = $2, hash = $3, raw_log = $6;`,
-			headerID, contentModel.Node, contentModel.Hash, contentModel.LogIndex, contentModel.TransactionIndex, contentModel.Raw,
+			`INSERT into ens.contenthash_changed (header_id, resolver, node, hash, log_idx, tx_idx, raw_log)
+        			VALUES($1, $2, $3, $4, $5, $6, $7)
+					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET resolver = $2, node = $3, hash = $4, raw_log = $7;`,
+			headerID, contentModel.Resolver, contentModel.Node, contentModel.Hash, contentModel.LogIndex, contentModel.TransactionIndex, contentModel.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()

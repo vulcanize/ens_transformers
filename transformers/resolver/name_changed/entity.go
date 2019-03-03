@@ -22,6 +22,7 @@ import (
 )
 
 type NameChangedEntity struct {
+	Resolver         common.Address
 	Node             common.Hash
 	Name             string
 	LogIndex         uint

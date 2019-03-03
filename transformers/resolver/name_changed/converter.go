@@ -32,13 +32,13 @@ func (NameChangedConverter) ToEntities(contractAbi string, ethLogs []types.Log) 
 	var entities []interface{}
 	for _, ethLog := range ethLogs {
 		entity := &NameChangedEntity{}
-		address := ethLog.Address
+		entity.Resolver = ethLog.Address
 		abi, err := geth.ParseAbi(contractAbi)
 		if err != nil {
 			return nil, err
 		}
 
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
+		contract := bind.NewBoundContract(entity.Resolver, abi, nil, nil, nil)
 
 		err = contract.UnpackLog(entity, "NameChanged", ethLog)
 		if err != nil {
@@ -71,6 +71,7 @@ func (converter NameChangedConverter) ToModels(entities []interface{}) ([]interf
 		}
 
 		model := NameChangedModel{
+			Resolver:         multiEntity.Resolver.Hex(),
 			Node:             multiEntity.Node.Hex(),
 			Name:             multiEntity.Name,
 			LogIndex:         logIdx,
