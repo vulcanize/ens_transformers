@@ -14,14 +14,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package new_owner
+package shared_test
 
-type NewOwnerModel struct {
-	Node             string
-	Label            string
-	Owner            string
-	Subnode          string
-	LogIndex         uint   `db:"log_idx"`
-	TransactionIndex uint   `db:"tx_idx"`
-	Raw              []byte `db:"raw_log"`
+import (
+	"io/ioutil"
+	"log"
+	"testing"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
+
+func TestRepository(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Shared Suite Test")
 }
+
+var _ = BeforeSuite(func() {
+	log.SetOutput(ioutil.Discard)
+})

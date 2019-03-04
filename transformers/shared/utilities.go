@@ -20,6 +20,7 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
 )
@@ -99,4 +100,10 @@ func MinInt64(ints []int64) (min int64) {
 		}
 	}
 	return
+}
+
+func CreateSubnode(node, label string) string {
+	nodeBytes := common.HexToHash(node)
+	labelBytes := common.HexToHash(label)
+	return crypto.Keccak256Hash(append(nodeBytes.Bytes(), labelBytes.Bytes()...)).Hex()
 }
