@@ -15,3 +15,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package initializer
+
+import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+
+	"github.com/vulcanize/ens_transformers/transformers/registry/new_ttl"
+)
+
+var TransformerInitializer transformer.TransformerInitializer = factories.Transformer{
+	Config:     new_ttl.GetNewTtlConfig(),
+	Converter:  new_ttl.NewTtlConverter{},
+	Repository: &new_ttl.NewTtlRepository{},
+}.NewTransformer
