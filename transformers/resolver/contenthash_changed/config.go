@@ -25,7 +25,7 @@ import (
 func GetContenthashChangedConfig() shared_t.TransformerConfig {
 	return shared_t.TransformerConfig{
 		TransformerName:     constants.ContenthashChangedLabel,
-		ContractAddresses:   []string{constants.RsolverContractAddress()}, // append newly found resolver addresses to this slice as we find them emitted from NewResolver events
+		ContractAddresses:   []string{constants.ResolverContractAddress()}, // append newly found resolver addresses to this slice as we find them emitted from NewResolver events
 		ContractAbi:         constants.ResolverABI(),
 		Topic:               constants.GetContenthashChangedSignature(),
 		StartingBlockNumber: constants.ResolverDeploymentBlock(),

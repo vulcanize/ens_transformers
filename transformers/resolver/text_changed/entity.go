@@ -14,21 +14,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package content_changed
+package text_changed
 
 import (
-	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
-	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
-func GetContentChangedConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
-		TransformerName:     constants.ContentChangedLabel,
-		ContractAddresses:   []string{constants.ResolverContractAddress()}, // append newly found resolver addresses to this slice as we find them emitted from NewResolver events
-		ContractAbi:         constants.ResolverABI(),
-		Topic:               constants.GetContentChangedSignature(),
-		StartingBlockNumber: constants.ResolverDeploymentBlock(),
-		EndingBlockNumber:   -1,
-	}
+type TextChangedEntity struct {
+	Resolver         common.Address
+	Node             common.Hash
+	Key              string
+	IndexedKey       string
+	LogIndex         uint
+	TransactionIndex uint
+	Raw              types.Log
 }

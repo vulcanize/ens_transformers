@@ -44,3 +44,4 @@ func multihashChangedMethod() string {
 }
 func nameChangedMethod() string   { return GetSolidityMethodSignature(ResolverABI(), "NameChanged") }
 func pubkeyChangedMethod() string { return GetSolidityMethodSignature(ResolverABI(), "PubkeyChanged") }
+func textChangedMethod() string   { return GetSolidityMethodSignature(ResolverABI(), "TextChanged") }

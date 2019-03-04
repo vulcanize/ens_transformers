@@ -14,21 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package content_changed
+package test_data
 
-import (
-	shared_t "github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-
-	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
+const (
+	RegistryAddress = "0x314159265dD8dbb310642f98f50C066173C1259b"
+	ResolverAddress = "0x1da022710dF5002339274AaDEe8D58218e9D6AB5"
+	RegistarAddress = "0x6090A6e47849629b7245Dfa1Ca21D94cd15878Ef"
 )
-
-func GetContentChangedConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
-		TransformerName:     constants.ContentChangedLabel,
-		ContractAddresses:   []string{constants.ResolverContractAddress()}, // append newly found resolver addresses to this slice as we find them emitted from NewResolver events
-		ContractAbi:         constants.ResolverABI(),
-		Topic:               constants.GetContentChangedSignature(),
-		StartingBlockNumber: constants.ResolverDeploymentBlock(),
-		EndingBlockNumber:   -1,
-	}
-}

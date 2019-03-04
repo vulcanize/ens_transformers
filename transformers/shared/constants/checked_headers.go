@@ -39,4 +39,5 @@ const (
 	MultihashChangedChecked   = "multihash_changed_checked"
 	NameChangedChecked        = "name_changed_checked"
 	PubkeyChangedChecked      = "pubkey_changed_checked"
+	TextChangedChecked        = "text_changed_checked"
 )
