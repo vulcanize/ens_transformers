@@ -58,7 +58,7 @@ func getEnvironmentInt64(key string) int64 {
 // Getters for contract addresses from environment files
 func RegistryContractAddress() string { return getEnvironmentString("contract.address.ensRegistry") }
 func RegistarContractAddress() string { return getEnvironmentString("contract.address.ensRegistar") }
-func RsolverContractAddress() string  { return getEnvironmentString("contract.address.ensResolver") }
+func ResolverContractAddress() string { return getEnvironmentString("contract.address.ensResolver") }
 
 func RegistryABI() string { return getEnvironmentString("contract.abi.ensRegistry") }
 func RegistarABI() string { return getEnvironmentString("contract.abi.ensRegistar") }

@@ -39,4 +39,5 @@ const (
 	MultihashChangedLabel   = "multihashChanged"
 	NameChangedLabel        = "nameChanged"
 	PubkeyChangedLabel      = "pubkeyChanged"
+	TextChangedLabel        = "textChanged"
 )

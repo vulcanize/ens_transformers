@@ -38,3 +38,4 @@ func GetContenthashChangedSignature() string { return GetEventSignature(contenth
 func GetMultihashChangedSignature() string   { return GetEventSignature(multihashChangedMethod()) }
 func GetNameChangedSignature() string        { return GetEventSignature(nameChangedMethod()) }
 func GetPubkeyChangedSignature() string      { return GetEventSignature(pubkeyChangedMethod()) }
+func GetTextChangedSignature() string        { return GetEventSignature(textChangedMethod()) }

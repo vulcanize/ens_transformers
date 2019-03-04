@@ -25,7 +25,7 @@ import (
 func GetPubkeyChangedConfig() shared_t.TransformerConfig {
 	return shared_t.TransformerConfig{
 		TransformerName:     constants.PubkeyChangedLabel,
-		ContractAddresses:   []string{constants.RsolverContractAddress()}, // append newly found resolver addresses to this slice as we find them emitted from NewResolver events
+		ContractAddresses:   []string{constants.ResolverContractAddress()}, // append newly found resolver addresses to this slice as we find them emitted from NewResolver events
 		ContractAbi:         constants.ResolverABI(),
 		Topic:               constants.GetPubkeyChangedSignature(),
 		StartingBlockNumber: constants.ResolverDeploymentBlock(),
