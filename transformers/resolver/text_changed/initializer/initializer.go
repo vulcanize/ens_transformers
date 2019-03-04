@@ -15,3 +15,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package initializer
+
+import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+
+	"github.com/vulcanize/ens_transformers/transformers/resolver/text_changed"
+)
+
+var TransformerInitializer transformer.TransformerInitializer = factories.Transformer{
+	Config:     text_changed.GetTextChangedConfig(),
+	Converter:  text_changed.TextChangedConverter{},
+	Repository: &text_changed.TextChangedRepository{},
+}.NewTransformer

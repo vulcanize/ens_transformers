@@ -15,3 +15,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package initializer
+
+import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+
+	"github.com/vulcanize/ens_transformers/transformers/resolver/abi_changed"
+)
+
+var TransformerInitializer transformer.TransformerInitializer = factories.Transformer{
+	Config:     abi_changed.GetAbiChangedConfig(),
+	Converter:  abi_changed.AbiChangedConverter{},
+	Repository: &abi_changed.AbiChangedRepository{},
+}.NewTransformer

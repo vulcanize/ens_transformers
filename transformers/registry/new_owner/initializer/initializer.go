@@ -15,3 +15,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package initializer
+
+import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+
+	"github.com/vulcanize/ens_transformers/transformers/registry/new_owner"
+)
+
+var TransformerInitializer transformer.TransformerInitializer = factories.Transformer{
+	Config:     new_owner.GetNewOwnerConfig(),
+	Converter:  new_owner.NewOwnerConverter{},
+	Repository: &new_owner.NewOwnerRepository{},
+}.NewTransformer

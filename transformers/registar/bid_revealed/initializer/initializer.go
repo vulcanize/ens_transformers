@@ -15,3 +15,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package initializer
+
+import (
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+
+	"github.com/vulcanize/ens_transformers/transformers/registar/bid_revealed"
+)
+
+var TransformerInitializer transformer.TransformerInitializer = factories.Transformer{
+	Config:     bid_revealed.GetBidRevealedConfig(),
+	Converter:  bid_revealed.BidRevealedConverter{},
+	Repository: &bid_revealed.BidRevealedRepository{},
+}.NewTransformer
