@@ -15,3 +15,72 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package transfer_test
+
+import (
+	"encoding/json"
+
+	"github.com/ethereum/go-ethereum/core/types"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+
+	"github.com/vulcanize/ens_transformers/transformers/registry/transfer"
+	"github.com/vulcanize/ens_transformers/transformers/test_data"
+)
+
+var _ = Describe("Transfer Converter", func() {
+	var converter = transfer.TransferConverter{}
+
+	Describe("ToEntity", func() {
+		It("converts an eth log to a bite entity", func() {
+			entities, err := converter.ToEntities(test_data.RegistryAbi, []types.Log{test_data.EthTransferLog})
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(entities)).To(Equal(1))
+			entity := entities[0]
+			Expect(entity).To(Equal(test_data.TransferEntity))
+		})
+
+		It("returns an error if converting log to entity fails", func() {
+			_, err := converter.ToEntities("error abi", []types.Log{test_data.EthTransferLog})
+
+			Expect(err).To(HaveOccurred())
+		})
+	})
+
+	Describe("ToModel", func() {
+		var emptyEntity = transfer.TransferEntity{}
+
+		It("converts an Entity to a Model", func() {
+			models, err := converter.ToModels([]interface{}{test_data.TransferEntity})
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(models)).To(Equal(1))
+			model := models[0]
+			Expect(model).To(Equal(test_data.TransferModel))
+		})
+
+		It("returns an error if the entity type is wrong", func() {
+			_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
+
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("entity of type test_data.WrongEntity, not transfer.TransferEntity"))
+		})
+
+		It("handles nil values", func() {
+			emptyLog, err := json.Marshal(types.Log{})
+			Expect(err).NotTo(HaveOccurred())
+			expectedModel := transfer.TransferModel{
+				Node:             "0000000000000000000000000000000000000000000000000000000000000000",
+				Owner:            "0000000000000000000000000000000000000000000000000000000000000000",
+				TransactionIndex: 0,
+				Raw:              emptyLog,
+			}
+			models, err := converter.ToModels([]interface{}{emptyEntity})
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(models)).To(Equal(1))
+			model := models[0]
+			Expect(model).To(Equal(expectedModel))
+		})
+	})
+})

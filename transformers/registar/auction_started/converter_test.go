@@ -23,60 +23,55 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/vulcanize/mcd_transformers/transformers/bite"
-	"github.com/vulcanize/mcd_transformers/transformers/test_data"
+	"github.com/vulcanize/ens_transformers/transformers/registar/auction_started"
+	"github.com/vulcanize/ens_transformers/transformers/test_data"
 )
 
-var _ = Describe("Bite Converter", func() {
-	var converter = bite.BiteConverter{}
+var _ = Describe("AuctionStarted Converter", func() {
+	var converter = auction_started.AuctionStartedConverter{}
 
 	Describe("ToEntity", func() {
 		It("converts an eth log to a bite entity", func() {
-			entities, err := converter.ToEntities(test_data.KovanCatABI, []types.Log{test_data.EthBiteLog})
+			entities, err := converter.ToEntities(test_data.RegistarAbi, []types.Log{test_data.EthAuctionStartedLog})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(entities)).To(Equal(1))
 			entity := entities[0]
-			Expect(entity).To(Equal(test_data.BiteEntity))
+			Expect(entity).To(Equal(test_data.AuctionStartedEntity))
 		})
 
 		It("returns an error if converting log to entity fails", func() {
-			_, err := converter.ToEntities("error abi", []types.Log{test_data.EthBiteLog})
+			_, err := converter.ToEntities("error abi", []types.Log{test_data.EthAuctionStartedLog})
 
 			Expect(err).To(HaveOccurred())
 		})
 	})
 
 	Describe("ToModel", func() {
-		var emptyEntity = bite.BiteEntity{}
+		var emptyEntity = auction_started.AuctionStartedEntity{}
 
 		It("converts an Entity to a Model", func() {
-			models, err := converter.ToModels([]interface{}{test_data.BiteEntity})
+			models, err := converter.ToModels([]interface{}{test_data.AuctionStartedEntity})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(models)).To(Equal(1))
 			model := models[0]
-			Expect(model).To(Equal(test_data.BiteModel))
+			Expect(model).To(Equal(test_data.AuctionStartedModel))
 		})
 
 		It("returns an error if the entity type is wrong", func() {
 			_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
 
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("entity of type test_data.WrongEntity, not bite.BiteEntity"))
+			Expect(err.Error()).To(ContainSubstring("entity of type test_data.WrongEntity, not auction_started.AuctionStartedEntity"))
 		})
 
 		It("handles nil values", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
-			expectedModel := bite.BiteModel{
-				Ilk:              "0000000000000000000000000000000000000000000000000000000000000000",
-				Urn:              "0000000000000000000000000000000000000000000000000000000000000000",
-				Ink:              "",
-				Art:              "",
-				IArt:             "",
-				Tab:              "",
-				NFlip:            "",
+			expectedModel := auction_started.AuctionStartedModel{
+				Hash:             "0000000000000000000000000000000000000000000000000000000000000000",
+				RegistrationDate: 0,
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}
