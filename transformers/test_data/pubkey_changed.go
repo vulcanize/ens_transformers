@@ -30,12 +30,14 @@ import (
 
 const (
 	TemporaryPubkeyChangedBlockNumber = int64(26)
-	TemporaryPubkeyChangedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryPubkeyChangedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002"
 	TemporaryPubkeyChangedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
 	pubkeyChangedRawJson, _ = json.Marshal(EthPubkeyChangedLog)
+	x                       = common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000001")
+	y                       = common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000002")
 )
 
 var EthPubkeyChangedLog = types.Log{
@@ -54,12 +56,18 @@ var EthPubkeyChangedLog = types.Log{
 }
 
 var PubkeyChangedEntity = pubkey_changed.PubkeyChangedEntity{
+	Node:             node,
+	X:                x,
+	Y:                y,
 	LogIndex:         EthPubkeyChangedLog.Index,
 	TransactionIndex: EthPubkeyChangedLog.TxIndex,
 	Raw:              EthPubkeyChangedLog,
 }
 
 var PubkeyChangedModel = pubkey_changed.PubkeyChangedModel{
+	Node:             node.Hex(),
+	X:                x.Hex(),
+	Y:                y.Hex(),
 	LogIndex:         EthPubkeyChangedLog.Index,
 	TransactionIndex: EthPubkeyChangedLog.TxIndex,
 	Raw:              pubkeyChangedRawJson,

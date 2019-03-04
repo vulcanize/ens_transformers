@@ -15,3 +15,74 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package new_owner_test
+
+import (
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
+	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/vulcanize/vulcanizedb/pkg/fakes"
+
+	"github.com/vulcanize/ens_transformers/test_config"
+	"github.com/vulcanize/ens_transformers/transformers/registry/new_owner"
+	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
+	"github.com/vulcanize/ens_transformers/transformers/test_data"
+	"github.com/vulcanize/ens_transformers/transformers/test_data/shared_behaviors"
+)
+
+var _ = Describe("NewOwner repository", func() {
+	var (
+		hashInvalidatedRepository new_owner.NewOwnerRepository
+		db                        *postgres.DB
+	)
+
+	BeforeEach(func() {
+		db = test_config.NewTestDB(test_config.NewTestNode())
+		test_config.CleanTestDB(db)
+		hashInvalidatedRepository = new_owner.NewOwnerRepository{}
+		hashInvalidatedRepository.SetDB(db)
+	})
+
+	Describe("Create", func() {
+		modelWithDifferentLogIdx := test_data.NewOwnerModel
+		modelWithDifferentLogIdx.LogIndex++
+		inputs := shared_behaviors.CreateBehaviorInputs{
+			CheckedHeaderColumnName:  constants.NewOwnerChecked,
+			LogEventTableName:        "ens.new_owner",
+			TestModel:                test_data.NewOwnerModel,
+			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
+			Repository:               &hashInvalidatedRepository,
+		}
+
+		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
+
+		It("persists a new_owner record", func() {
+			headerRepository := repositories.NewHeaderRepository(db)
+			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
+			Expect(err).NotTo(HaveOccurred())
+
+			err = hashInvalidatedRepository.Create(headerID, []interface{}{test_data.NewOwnerModel})
+
+			Expect(err).NotTo(HaveOccurred())
+			var dbNewOwner new_owner.NewOwnerModel
+			err = db.Get(&dbNewOwner, `SELECT node, label, owner, log_idx, tx_idx, raw_log FROM ens.new_owner WHERE header_id = $1`, headerID)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(dbNewOwner.Node).To(Equal(test_data.NewOwnerModel.Node))
+			Expect(dbNewOwner.Label).To(Equal(test_data.NewOwnerModel.Label))
+			Expect(dbNewOwner.Owner).To(Equal(test_data.NewOwnerModel.Owner))
+			Expect(dbNewOwner.LogIndex).To(Equal(test_data.NewOwnerModel.LogIndex))
+			Expect(dbNewOwner.TransactionIndex).To(Equal(test_data.NewOwnerModel.TransactionIndex))
+			Expect(dbNewOwner.Raw).To(MatchJSON(test_data.NewOwnerModel.Raw))
+		})
+	})
+
+	Describe("MarkHeaderChecked", func() {
+		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
+			CheckedHeaderColumnName: constants.NewOwnerChecked,
+			Repository:              &hashInvalidatedRepository,
+		}
+
+		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)
+	})
+})

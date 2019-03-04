@@ -73,7 +73,7 @@ func (converter ContenthashChangedConverter) ToModels(entities []interface{}) ([
 		model := ContenthashChangedModel{
 			Resolver:         contentEntity.Resolver.Hex(),
 			Node:             contentEntity.Node.Hex(),
-			Hash:             contentEntity.Hash.Hex(),
+			Hash:             contentEntity.Hash,
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,

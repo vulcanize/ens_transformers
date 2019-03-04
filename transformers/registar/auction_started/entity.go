@@ -19,11 +19,12 @@ package auction_started
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"math/big"
 )
 
 type AuctionStartedEntity struct {
 	Hash             common.Hash
-	RegistrationDate uint
+	RegistrationDate *big.Int
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

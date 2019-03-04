@@ -30,7 +30,7 @@ import (
 
 const (
 	TemporaryHashRegisteredBlockNumber = int64(26)
-	TemporaryHashRegisteredData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryHashRegisteredData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002"
 	TemporaryHashRegisteredTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
@@ -55,12 +55,20 @@ var EthHashRegisteredLog = types.Log{
 }
 
 var HashRegisteredEntity = hash_registered.HashRegisteredEntity{
+	Hash:             hash,
+	Owner:            owner,
+	Value:            value,
+	RegistrationDate: registrationDate,
 	LogIndex:         EthHashRegisteredLog.Index,
 	TransactionIndex: EthHashRegisteredLog.TxIndex,
 	Raw:              EthHashRegisteredLog,
 }
 
 var HashRegisteredModel = hash_registered.HashRegisteredModel{
+	Hash:             hash.Hex(),
+	Owner:            owner.Hex(),
+	Value:            value.String(),
+	RegistrationDate: registrationDate.String(),
 	LogIndex:         EthHashRegisteredLog.Index,
 	TransactionIndex: EthHashRegisteredLog.TxIndex,
 	Raw:              hashRegisteredRawJson,

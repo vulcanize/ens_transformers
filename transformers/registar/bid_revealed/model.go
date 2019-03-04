@@ -20,7 +20,7 @@ type BidRevealedModel struct {
 	Hash             string
 	Owner            string
 	Value            string
-	Status           uint
+	Status           uint8
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

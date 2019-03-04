@@ -24,8 +24,8 @@ import (
 type TextChangedEntity struct {
 	Resolver         common.Address
 	Node             common.Hash
-	Key              string
 	IndexedKey       string
+	Key              string
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

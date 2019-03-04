@@ -18,6 +18,7 @@ package test_data
 
 import (
 	"encoding/json"
+	"github.com/vulcanize/ens_transformers/transformers/shared"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -30,12 +31,15 @@ import (
 
 const (
 	TemporaryNewOwnerBlockNumber = int64(26)
-	TemporaryNewOwnerData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryNewOwnerData        = "0x000000000000000000000000fDb33f8AC7ce72d7D4795Dd8610E323B4C122fbB"
 	TemporaryNewOwnerTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
 	newOwnerRawJson, _ = json.Marshal(EthNewOwnerLog)
+	label              = common.HexToHash("0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb")
+	ownerAddr          = common.HexToAddress("0x000000000000000000000000fDb33f8AC7ce72d7D4795Dd8610E323B4C122fbB")
+	subnode            = shared.CreateSubnode(node.Hex(), label.Hex())
 )
 
 var EthNewOwnerLog = types.Log{
@@ -55,12 +59,19 @@ var EthNewOwnerLog = types.Log{
 }
 
 var NewOwnerEntity = new_owner.NewOwnerEntity{
+	Node:             node,
+	Label:            label,
+	Owner:            ownerAddr,
 	LogIndex:         EthNewOwnerLog.Index,
 	TransactionIndex: EthNewOwnerLog.TxIndex,
 	Raw:              EthNewOwnerLog,
 }
 
 var NewOwnerModel = new_owner.NewOwnerModel{
+	Node:             node.Hex(),
+	Label:            label.Hex(),
+	Owner:            ownerAddr.Hex(),
+	Subnode:          subnode,
 	LogIndex:         EthNewOwnerLog.Index,
 	TransactionIndex: EthNewOwnerLog.TxIndex,
 	Raw:              newOwnerRawJson,

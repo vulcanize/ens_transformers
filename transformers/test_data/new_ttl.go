@@ -30,12 +30,13 @@ import (
 
 const (
 	TemporaryNewTtlBlockNumber = int64(26)
-	TemporaryNewTtlData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryNewTtlData        = "0x0000000000000000000000000000000000000000000000000000000000000004"
 	TemporaryNewTtlTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
 	newTtlRawJson, _ = json.Marshal(EthNewTtlLog)
+	ttl              = hexutil.MustDecodeBig("0x0000000000000000000000000000000000000000000000000000000000000004")
 )
 
 var EthNewTtlLog = types.Log{
@@ -54,12 +55,16 @@ var EthNewTtlLog = types.Log{
 }
 
 var NewTtlEntity = new_ttl.NewTTLEntity{
+	Node:             node,
+	Ttl:              ttl,
 	LogIndex:         EthNewTtlLog.Index,
 	TransactionIndex: EthNewTtlLog.TxIndex,
 	Raw:              EthNewTtlLog,
 }
 
 var NewTtlModel = new_ttl.NewTTLModel{
+	Node:             node.Hex(),
+	Ttl:              ttl.String(),
 	LogIndex:         EthNewTtlLog.Index,
 	TransactionIndex: EthNewTtlLog.TxIndex,
 	Raw:              newTtlRawJson,

@@ -30,7 +30,7 @@ import (
 
 const (
 	TemporaryNewResolverBlockNumber = int64(26)
-	TemporaryNewResolverData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryNewResolverData        = "0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"
 	TemporaryNewResolverTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
@@ -54,12 +54,16 @@ var EthNewResolverLog = types.Log{
 }
 
 var NewResolverEntity = new_resolver.NewResolverEntity{
+	Node:             node,
+	Resolver:         owner,
 	LogIndex:         EthNewResolverLog.Index,
 	TransactionIndex: EthNewResolverLog.TxIndex,
 	Raw:              EthNewResolverLog,
 }
 
 var NewResolverModel = new_resolver.NewResolverModel{
+	Node:             node.Hex(),
+	Resolver:         owner.Hex(),
 	LogIndex:         EthNewResolverLog.Index,
 	TransactionIndex: EthNewResolverLog.TxIndex,
 	Raw:              newResolverRawJson,

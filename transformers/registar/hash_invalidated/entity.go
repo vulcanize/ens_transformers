@@ -27,7 +27,7 @@ type HashInvalidatedEntity struct {
 	Hash             common.Hash
 	Name             string
 	Value            *big.Int
-	RegistrationDate uint
+	RegistrationDate *big.Int
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

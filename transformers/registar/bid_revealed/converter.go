@@ -74,7 +74,7 @@ func (converter BidRevealedConverter) ToModels(entities []interface{}) ([]interf
 			Hash:             bidEntity.Hash.Hex(),
 			Owner:            bidEntity.Owner.Hex(),
 			Value:            bidEntity.Value.String(),
-			Status:           uint(bidEntity.Status),
+			Status:           bidEntity.Status,
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,

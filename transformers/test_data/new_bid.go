@@ -18,6 +18,7 @@ package test_data
 
 import (
 	"encoding/json"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -30,12 +31,13 @@ import (
 
 const (
 	TemporaryNewBidBlockNumber = int64(26)
-	TemporaryNewBidData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryNewBidData        = "0x0000000000000000000000000000000000000000000000000000000000000005"
 	TemporaryNewBidTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
 	newBidRawJson, _ = json.Marshal(EthNewBidLog)
+	deposit          = big.NewInt(5)
 )
 
 var EthNewBidLog = types.Log{
@@ -55,12 +57,18 @@ var EthNewBidLog = types.Log{
 }
 
 var NewBidEntity = new_bid.NewBidEntity{
+	Hash:             node,
+	Bidder:           owner,
+	Deposit:          deposit,
 	LogIndex:         EthNewBidLog.Index,
 	TransactionIndex: EthNewBidLog.TxIndex,
 	Raw:              EthNewBidLog,
 }
 
 var NewBidModel = new_bid.NewBidModel{
+	Hash:             node.Hex(),
+	Bidder:           owner.Hex(),
+	Deposit:          deposit.String(),
 	LogIndex:         EthNewBidLog.Index,
 	TransactionIndex: EthNewBidLog.TxIndex,
 	Raw:              newBidRawJson,

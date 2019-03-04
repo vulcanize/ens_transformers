@@ -3,7 +3,7 @@ CREATE TABLE ens.auction_started (
   id                SERIAL PRIMARY KEY,
   header_id         INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   hash              CHARACTER VARYING(66) NOT NULL,
-  registration_date INTEGER NOT NULL,
+  registration_date NUMERIC NOT NULL,
   tx_idx            INTEGER NOT NUll,
   log_idx           INTEGER NOT NUll,
   raw_log           JSONB,

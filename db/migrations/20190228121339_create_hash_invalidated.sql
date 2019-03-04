@@ -5,7 +5,7 @@ CREATE TABLE ens.hash_invalidated (
   hash              CHARACTER VARYING(66) NOT NULL,
   name              TEXT NOT NULL,
   value             NUMERIC NOT NULL,
-  registration_date INTEGER NOT NULL,
+  registration_date NUMERIC NOT NULL,
   tx_idx            INTEGER NOT NUll,
   log_idx           INTEGER NOT NUll,
   raw_log           JSONB,

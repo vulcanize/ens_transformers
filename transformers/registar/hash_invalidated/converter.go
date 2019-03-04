@@ -74,7 +74,7 @@ func (converter HashInvalidatedConverter) ToModels(entities []interface{}) ([]in
 			Hash:             hashEntity.Hash.Hex(),
 			Name:             hashEntity.Name,
 			Value:            hashEntity.Value.String(),
-			RegistrationDate: hashEntity.RegistrationDate,
+			RegistrationDate: hashEntity.RegistrationDate.String(),
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,

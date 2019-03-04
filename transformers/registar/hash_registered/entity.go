@@ -27,7 +27,7 @@ type HashRegisteredEntity struct {
 	Hash             common.Hash
 	Owner            common.Address
 	Value            *big.Int
-	RegistrationDate uint
+	RegistrationDate *big.Int
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

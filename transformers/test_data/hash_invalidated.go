@@ -25,17 +25,18 @@ import (
 
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
 
-	"github.com/vulcanize/ens_transformers/transformers/registar/auction_started"
+	"github.com/vulcanize/ens_transformers/transformers/registar/hash_invalidated"
 )
 
 const (
 	TemporaryHashInvalidatedBlockNumber = int64(26)
-	TemporaryHashInvalidatedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryHashInvalidatedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002"
 	TemporaryHashInvalidatedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
 	hashInvalidatedRawJson, _ = json.Marshal(EthHashInvalidatedLog)
+	name                      = "0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"
 )
 
 var EthHashInvalidatedLog = types.Log{
@@ -54,13 +55,21 @@ var EthHashInvalidatedLog = types.Log{
 	Removed:     false,
 }
 
-var HashInvalidatedEntity = auction_started.AuctionStartedEntity{
+var HashInvalidatedEntity = hash_invalidated.HashInvalidatedEntity{
+	Hash:             hash,
+	Name:             name,
+	Value:            value,
+	RegistrationDate: registrationDate,
 	LogIndex:         EthHashInvalidatedLog.Index,
 	TransactionIndex: EthHashInvalidatedLog.TxIndex,
 	Raw:              EthHashInvalidatedLog,
 }
 
-var HashInvalidatedModel = auction_started.AuctionStartedModel{
+var HashInvalidatedModel = hash_invalidated.HashInvalidatedModel{
+	Hash:             hash.Hex(),
+	Name:             name,
+	Value:            value.String(),
+	RegistrationDate: registrationDate.String(),
 	LogIndex:         EthHashInvalidatedLog.Index,
 	TransactionIndex: EthHashInvalidatedLog.TxIndex,
 	Raw:              hashInvalidatedRawJson,
