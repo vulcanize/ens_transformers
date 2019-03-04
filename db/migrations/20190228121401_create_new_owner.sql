@@ -5,6 +5,7 @@ CREATE TABLE ens.new_owner (
   node              CHARACTER VARYING(66) NOT NULL,
   label             CHARACTER VARYING(66) NOT NULL,
   owner             CHARACTER VARYING(66) NOT NULL,
+  subnode           CHARACTER VARYING(66) NOT NULL,
   tx_idx            INTEGER NOT NUll,
   log_idx           INTEGER NOT NUll,
   raw_log           JSONB,

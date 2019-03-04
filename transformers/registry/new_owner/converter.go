@@ -24,6 +24,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
+
+	"github.com/vulcanize/ens_transformers/transformers/shared"
 )
 
 type NewOwnerConverter struct{}
@@ -70,10 +72,15 @@ func (converter NewOwnerConverter) ToModels(entities []interface{}) ([]interface
 			return nil, err
 		}
 
+		parentHash := ownerEntity.Node.Hex()
+		labelHash := ownerEntity.Label.Hex()
+		subnode := shared.CreateSubnode(parentHash, labelHash)
+
 		model := NewOwnerModel{
-			Node:             ownerEntity.Node.Hex(),
-			Label:            ownerEntity.Label.Hex(),
+			Node:             parentHash,
+			Label:            labelHash,
 			Owner:            ownerEntity.Owner.Hex(),
+			Subnode:          subnode,
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,
