@@ -30,7 +30,7 @@ import (
 
 const (
 	TemporaryTransferBlockNumber = int64(26)
-	TemporaryTransferData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryTransferData        = "0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"
 	TemporaryTransferTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
@@ -54,12 +54,16 @@ var EthTransferLog = types.Log{
 }
 
 var TransferEntity = transfer.TransferEntity{
+	Node:             node,
+	Owner:            owner,
 	LogIndex:         EthTransferLog.Index,
 	TransactionIndex: EthTransferLog.TxIndex,
 	Raw:              EthTransferLog,
 }
 
 var TransferModel = transfer.TransferModel{
+	Node:             node.Hex(),
+	Owner:            owner.Hex(),
 	LogIndex:         EthTransferLog.Index,
 	TransactionIndex: EthTransferLog.TxIndex,
 	Raw:              transferRawJson,

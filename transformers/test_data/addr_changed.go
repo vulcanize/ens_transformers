@@ -18,7 +18,6 @@ package test_data
 
 import (
 	"encoding/json"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -30,12 +29,13 @@ import (
 
 const (
 	TemporaryAddrChangedBlockNumber = int64(26)
-	TemporaryAddrChangedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryAddrChangedData        = "0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"
 	TemporaryAddrChangedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
 	addrChangedRawJson, _ = json.Marshal(EthAddrChangedLog)
+	address               = common.HexToAddress("0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb")
 )
 
 var EthAddrChangedLog = types.Log{
@@ -54,12 +54,18 @@ var EthAddrChangedLog = types.Log{
 }
 
 var AddrChangedEntity = addr_changed.AddrChangedEntity{
+	Resolver:         common.HexToAddress(ResolverAddress),
+	Node:             node,
+	A:                address,
 	LogIndex:         EthAddrChangedLog.Index,
 	TransactionIndex: EthAddrChangedLog.TxIndex,
 	Raw:              EthAddrChangedLog,
 }
 
 var AddrChangedModel = addr_changed.AddrChangedModel{
+	Resolver:         ResolverAddress,
+	Node:             node.Hex(),
+	Address:          address.Hex(),
 	LogIndex:         EthAddrChangedLog.Index,
 	TransactionIndex: EthAddrChangedLog.TxIndex,
 	Raw:              addrChangedRawJson,

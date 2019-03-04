@@ -4,7 +4,7 @@ CREATE TABLE ens.contenthash_changed (
   header_id         INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   resolver          CHARACTER VARYING(66) NOT NULL,
   node              CHARACTER VARYING(66) NOT NULL,
-  hash              CHARACTER VARYING(66) NOT NULL,
+  hash              BYTEA NOT NULL,
   tx_idx            INTEGER NOT NUll,
   log_idx           INTEGER NOT NUll,
   raw_log           JSONB,

@@ -30,7 +30,7 @@ import (
 
 const (
 	TemporaryContenthashChangedBlockNumber = int64(26)
-	TemporaryContenthashChangedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryContenthashChangedData        = "0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"
 	TemporaryContenthashChangedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
@@ -54,12 +54,18 @@ var EthContenthashChangedLog = types.Log{
 }
 
 var ContenthashChangedEntity = contenthash_changed.ContenthashChangedEntity{
+	Resolver:         common.HexToAddress(ResolverAddress),
+	Node:             node,
+	Hash:             hash.Bytes(),
 	LogIndex:         EthContenthashChangedLog.Index,
 	TransactionIndex: EthContenthashChangedLog.TxIndex,
 	Raw:              EthContenthashChangedLog,
 }
 
 var ContenthashChangedModel = contenthash_changed.ContenthashChangedModel{
+	Resolver:         ResolverAddress,
+	Node:             node.Hex(),
+	Hash:             hash.Bytes(),
 	LogIndex:         EthContenthashChangedLog.Index,
 	TransactionIndex: EthContenthashChangedLog.TxIndex,
 	Raw:              contenthashChangedRawJson,

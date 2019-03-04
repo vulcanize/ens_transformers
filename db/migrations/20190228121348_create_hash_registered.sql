@@ -5,7 +5,7 @@ CREATE TABLE ens.hash_registered (
   hash              CHARACTER VARYING(66) NOT NULL,
   owner             CHARACTER VARYING(66) NOT NULL,
   value             NUMERIC NOT NULL,
-  registration_date INTEGER NOT NULL,
+  registration_date NUMERIC NOT NULL,
   tx_idx            INTEGER NOT NUll,
   log_idx           INTEGER NOT NUll,
   raw_log           JSONB,

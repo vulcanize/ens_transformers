@@ -30,12 +30,13 @@ import (
 
 const (
 	TemporaryAuctioStartedBlockNumber  = int64(26)
-	TemporaryAuctionStartedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryAuctionStartedData        = "0x0000000000000000000000000000000000000000000000000000000000000002"
 	TemporaryAuctionStartedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
 	auctionStartedRawJson, _ = json.Marshal(EthAuctionStartedLog)
+	registrationDate         = hexutil.MustDecodeBig(TemporaryAuctionStartedData)
 )
 
 var EthAuctionStartedLog = types.Log{
@@ -54,12 +55,16 @@ var EthAuctionStartedLog = types.Log{
 }
 
 var AuctionStartedEntity = auction_started.AuctionStartedEntity{
+	Hash:             node,
+	RegistrationDate: registrationDate,
 	LogIndex:         EthAuctionStartedLog.Index,
 	TransactionIndex: EthAuctionStartedLog.TxIndex,
 	Raw:              EthAuctionStartedLog,
 }
 
 var AuctionStartedModel = auction_started.AuctionStartedModel{
+	Hash:             node.Hex(),
+	RegistrationDate: registrationDate.String(),
 	LogIndex:         EthAuctionStartedLog.Index,
 	TransactionIndex: EthAuctionStartedLog.TxIndex,
 	Raw:              auctionStartedRawJson,

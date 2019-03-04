@@ -24,7 +24,7 @@ import (
 type ContenthashChangedEntity struct {
 	Resolver         common.Address
 	Node             common.Hash
-	Hash             common.Hash
+	Hash             []byte
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

@@ -52,10 +52,10 @@ func (repository TextChangedRepository) Create(headerID int64, models []interfac
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into ens.text_changed (header_id, resolver, node, key, indexed_key, log_idx, tx_idx, raw_log)
+			`INSERT into ens.text_changed (header_id, resolver, node, indexed_key, key, log_idx, tx_idx, raw_log)
         			VALUES($1, $2, $3, $4, $5, $6, $7, $8)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET resolver = $2, node = $3, key = $4, indexed_key = $5, raw_log = $8;`,
-			headerID, textModel.Resolver, textModel.Node, textModel.Key, textModel.IndexedKey, textModel.LogIndex, textModel.TransactionIndex, textModel.Raw,
+					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET resolver = $2, node = $3, indexed_key = $4, key = $5, raw_log = $8;`,
+			headerID, textModel.Resolver, textModel.Node, textModel.IndexedKey, textModel.Key, textModel.LogIndex, textModel.TransactionIndex, textModel.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()

@@ -19,6 +19,7 @@ package test_data
 import (
 	"encoding/json"
 	"github.com/vulcanize/ens_transformers/transformers/registar/bid_revealed"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -29,12 +30,15 @@ import (
 
 const (
 	TemporaryBidRevealedBlockNumber = int64(26)
-	TemporaryBidRevealedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryBidRevealedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002"
 	TemporaryBidRevealedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
-	bidRevealedRawJson, _ = json.Marshal(EthBidRevealedLog)
+	bidRevealedRawJson, _       = json.Marshal(EthBidRevealedLog)
+	owner                       = common.HexToAddress("0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb")
+	value                       = big.NewInt(1)
+	status                uint8 = 2
 )
 
 var EthBidRevealedLog = types.Log{
@@ -54,12 +58,20 @@ var EthBidRevealedLog = types.Log{
 }
 
 var BidRevealedEntity = bid_revealed.BidRevealedEntity{
+	Hash:             node,
+	Owner:            owner,
+	Value:            value,
+	Status:           status,
 	LogIndex:         EthBidRevealedLog.Index,
 	TransactionIndex: EthBidRevealedLog.TxIndex,
 	Raw:              EthBidRevealedLog,
 }
 
 var BidRevealedModel = bid_revealed.BidRevealedModel{
+	Hash:             node.Hex(),
+	Owner:            owner.Hex(),
+	Value:            value.String(),
+	Status:           status,
 	LogIndex:         EthBidRevealedLog.Index,
 	TransactionIndex: EthBidRevealedLog.TxIndex,
 	Raw:              bidRevealedRawJson,

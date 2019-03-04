@@ -72,7 +72,7 @@ func (converter AuctionStartedConverter) ToModels(entities []interface{}) ([]int
 
 		model := AuctionStartedModel{
 			Hash:             auctionEntity.Hash.Hex(),
-			RegistrationDate: auctionEntity.RegistrationDate,
+			RegistrationDate: auctionEntity.RegistrationDate.String(),
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,

@@ -19,7 +19,7 @@ package multihash_changed
 type MultihashChangedModel struct {
 	Resolver         string
 	Node             string
-	Hash             string
+	Hash             []byte
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

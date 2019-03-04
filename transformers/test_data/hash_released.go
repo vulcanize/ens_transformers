@@ -30,7 +30,7 @@ import (
 
 const (
 	TemporaryHashReleasedBlockNumber = int64(26)
-	TemporaryHashReleasedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
+	TemporaryHashReleasedData        = "0x0000000000000000000000000000000000000000000000000000000000000001"
 	TemporaryHashReleasedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
@@ -54,12 +54,16 @@ var EthHashReleasedLog = types.Log{
 }
 
 var HashReleasedEntity = hash_released.HashReleasedEntity{
+	Hash:             hash,
+	Value:            value,
 	LogIndex:         EthHashReleasedLog.Index,
 	TransactionIndex: EthHashReleasedLog.TxIndex,
 	Raw:              EthHashReleasedLog,
 }
 
 var HashReleasedModel = hash_released.HashReleasedModel{
+	Hash:             hash.Hex(),
+	Value:            value.String(),
 	LogIndex:         EthHashReleasedLog.Index,
 	TransactionIndex: EthHashReleasedLog.TxIndex,
 	Raw:              hashReleasedRawJson,

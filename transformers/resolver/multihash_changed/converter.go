@@ -73,7 +73,7 @@ func (converter MultihashChangedConverter) ToModels(entities []interface{}) ([]i
 		model := MultihashChangedModel{
 			Resolver:         multiEntity.Resolver.Hex(),
 			Node:             multiEntity.Node.Hex(),
-			Hash:             multiEntity.Hash.Hex(),
+			Hash:             multiEntity.Hash,
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,

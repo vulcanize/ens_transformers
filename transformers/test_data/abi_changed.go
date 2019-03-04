@@ -18,9 +18,9 @@ package test_data
 
 import (
 	"encoding/json"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/vulcanize/vulcanizedb/pkg/fakes"
@@ -30,12 +30,13 @@ import (
 
 const (
 	TemporaryAbiChangedBlockNumber = int64(26)
-	TemporaryAbiChangedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
 	TemporaryAbiChangedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
-	abiChangedRawJson, _ = json.Marshal(EthAbiChangedLog)
+	abiChangedRawJson, _  = json.Marshal(EthAbiChangedLog)
+	node                  = common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000")
+	abiChangedContentType = big.NewInt(1)
 )
 
 var EthAbiChangedLog = types.Log{
@@ -43,9 +44,9 @@ var EthAbiChangedLog = types.Log{
 	Topics: []common.Hash{
 		common.HexToHash("0x99b5620489b6ef926d4518936cfec15d305452712b88bd59da2d9c10fb0953e8"),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),
-		common.HexToHash("0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"),
+		common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000001"),
 	},
-	Data:        hexutil.MustDecode(TemporaryAbiChangedData),
+	Data:        nil,
 	BlockNumber: uint64(TemporaryAbiChangedBlockNumber),
 	TxHash:      common.HexToHash(TemporaryAbiChangedTransaction),
 	TxIndex:     111,
@@ -55,12 +56,18 @@ var EthAbiChangedLog = types.Log{
 }
 
 var AbiChangedEntity = abi_changed.AbiChangedEntity{
+	Resolver:         common.HexToAddress(ResolverAddress),
+	Node:             node,
+	ContentType:      abiChangedContentType,
 	LogIndex:         EthAbiChangedLog.Index,
 	TransactionIndex: EthAbiChangedLog.TxIndex,
 	Raw:              EthAbiChangedLog,
 }
 
 var AbiChangedModel = abi_changed.AbiChangedModel{
+	Resolver:         ResolverAddress,
+	Node:             node.Hex(),
+	ContentType:      abiChangedContentType.String(),
 	LogIndex:         EthAbiChangedLog.Index,
 	TransactionIndex: EthAbiChangedLog.TxIndex,
 	Raw:              abiChangedRawJson,

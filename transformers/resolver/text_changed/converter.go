@@ -73,8 +73,8 @@ func (converter TextChangedConverter) ToModels(entities []interface{}) ([]interf
 		model := TextChangedModel{
 			Resolver:         textEntity.Resolver.Hex(),
 			Node:             textEntity.Node.Hex(),
-			Key:              textEntity.Key,
 			IndexedKey:       textEntity.IndexedKey,
+			Key:              textEntity.Key,
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,
