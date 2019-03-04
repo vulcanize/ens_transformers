@@ -39,7 +39,7 @@ var (
 )
 
 var EthMultihashChangedLog = types.Log{
-	Address: common.HexToAddress("0x2f34f22a00ee4b7a8f8bbc4eaee1658774c624e0"),
+	Address: common.HexToAddress(ResolverAddress),
 	Topics: []common.Hash{
 		common.HexToHash("0x99b5620489b6ef926d4518936cfec15d305452712b88bd59da2d9c10fb0953e8"),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),
