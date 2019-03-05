@@ -33,7 +33,7 @@ func newTtlMethod() string      { return GetSolidityMethodSignature(RegistryABI(
 func transferMethod() string    { return GetSolidityMethodSignature(RegistryABI(), "Transfer") }
 
 // Resolver
-func abiChangedMethod() string     { return GetSolidityMethodSignature(ResolverABI(), "AbiChanged") }
+func abiChangedMethod() string     { return GetSolidityMethodSignature(ResolverABI(), "ABIChanged") }
 func addrChangedMethod() string    { return GetSolidityMethodSignature(ResolverABI(), "AddrChanged") }
 func contentChangedMethod() string { return GetSolidityMethodSignature(ResolverABI(), "ContentChanged") }
 func contenthashChangedMethod() string {
