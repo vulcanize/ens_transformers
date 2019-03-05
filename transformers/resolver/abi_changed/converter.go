@@ -40,7 +40,7 @@ func (AbiChangedConverter) ToEntities(contractAbi string, ethLogs []types.Log) (
 
 		contract := bind.NewBoundContract(entity.Resolver, abi, nil, nil, nil)
 
-		err = contract.UnpackLog(entity, "AbiChanged", ethLog)
+		err = contract.UnpackLog(entity, "ABIChanged", ethLog)
 		if err != nil {
 			return nil, err
 		}

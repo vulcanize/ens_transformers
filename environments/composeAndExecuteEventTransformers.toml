@@ -8,7 +8,6 @@
 
 [exporter]
     home     = "github.com/vulcanize/vulcanizedb"
-    clone    = false
     name     = "ENSEventTransformerExporter"
     save     = false
     transformerNames = [
