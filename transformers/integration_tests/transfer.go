@@ -79,7 +79,7 @@ var _ = Describe("Transfer Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []transfer.TransferModel
-		err = db.Select(&dbResult, `SELECT art, iart, ilk, ink, nflip, tab, urn from maker.transfer`)
+		err = db.Select(&dbResult, `SELECT art, iart, ilk, ink, nflip, tab, urn from ens.transfer`)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(dbResult)).To(Equal(1))
 		res := dbResult[0]

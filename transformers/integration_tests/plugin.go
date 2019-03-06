@@ -149,7 +149,7 @@ var _ = Describe("Plugin test", func() {
 
 				returned := model{}
 
-				err = db.Get(&returned, `SELECT * FROM maker.new_owner WHERE header_id = $1`, headerID)
+				err = db.Get(&returned, `SELECT * FROM ens.new_owner WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(returned.Node).To(Equal("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"))
 				Expect(returned.Label).To(Equal("80000000000000000000"))
