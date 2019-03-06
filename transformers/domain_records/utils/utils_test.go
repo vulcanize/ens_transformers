@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package shared_test
+package utils_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -23,7 +23,7 @@ import (
 	"github.com/vulcanize/ens_transformers/transformers/domain_records/utils"
 )
 
-var _ = Describe("Shared Utilities", func() {
+var _ = Describe("Utils", func() {
 	Describe("CreateSubnode", func() {
 		It("Creates a subnode hash from a given parent and label hash", func() {
 			node := "0x583506c12610038ce46126390030389f0555a9525aa5be5a2dd2bf08e316bb00"

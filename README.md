@@ -1,5 +1,8 @@
-# ens_transformers
-VulcanizeDB transformers for ENS
+# [VulcanizeDB](https://github.com/vulcanize/vulcanizedb) Transformers for [ENS](https://ens.domains)
+
+[![Join the chat at https://gitter.im/vulcanizeio/VulcanizeDB](https://badges.gitter.im/vulcanizeio/VulcanizeDB.svg)](https://gitter.im/vulcanizeio/VulcanizeDB?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+[![Build Status](https://travis-ci.com/vulcanize/ens_transformers.svg?branch=master)](https://travis-ci.com/vulcanize/ens_transformers)
 
 This repository contains transformers for the [Ethereum Name Service](https://ens.domains) contracts whose [TransformerInitializers](https://github.com/vulcanize/maker-vulcanizedb/blob/compose_and_execute/libraries/shared/transformer/event_transformer.go#L33)
 can be composed and executed over using vulcanizeDB's [composeAndExecute](https://github.com/vulcanize/maker-vulcanizedb/blob/compose_and_execute/cmd/composeAndExecute.go) command.
