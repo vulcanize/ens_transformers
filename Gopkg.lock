@@ -28,6 +28,14 @@
   revision = "2e60448ffcc6bf78332d1fe590260095f554dd78"
 
 [[projects]]
+  digest = "1:5d47691333460db6ac83ced03c79b4bdb9aff3e322be24affb7855bed8affc6c"
+  name = "github.com/dave/jennifer"
+  packages = ["jen"]
+  pruneopts = ""
+  revision = "14e399b6b5e8456c66c45c955fc27b568bacb5c9"
+  version = "v1.3.0"
+
+[[projects]]
   digest = "1:aaeffbff5bd24654cb4c190ed75d6c7b57b4f5d6741914c1a7a6bb7447e756c5"
   name = "github.com/deckarep/golang-set"
   packages = ["."]
@@ -106,6 +114,17 @@
   pruneopts = ""
   revision = "0cd6bf5da1e1c83f8b45653022c74f71af0538a4"
   version = "v1.1.1"
+
+[[projects]]
+  digest = "1:85f8f8d390a03287a563e215ea6bd0610c858042731a8b42062435a0dcbc485f"
+  name = "github.com/hashicorp/golang-lru"
+  packages = [
+    ".",
+    "simplelru",
+  ]
+  pruneopts = ""
+  revision = "7087cb70de9f7a8bc0a10c375cb0d2280a8edf9c"
+  version = "v0.5.1"
 
 [[projects]]
   digest = "1:d14365c51dd1d34d5c79833ec91413bfbb166be978724f15701e17080dc06dec"
@@ -374,19 +393,46 @@
   digest = "1:295563788cd3dc78105c79844f99801cbac9ac4a384bb931e2cc692651366d49"
   name = "github.com/vulcanize/vulcanizedb"
   packages = [
+    "libraries/shared/chunker",
     "libraries/shared/constants",
+    "libraries/shared/factories",
+    "libraries/shared/fetcher",
     "libraries/shared/repository",
+    "libraries/shared/storage",
     "libraries/shared/storage/utils",
     "libraries/shared/transformer",
+    "libraries/shared/watcher",
     "pkg/config",
     "pkg/core",
+    "pkg/datastore",
     "pkg/datastore/postgres",
+    "pkg/datastore/postgres/repositories",
     "pkg/fakes",
+    "pkg/filters",
     "pkg/fs",
     "pkg/geth",
     "pkg/geth/client",
     "pkg/geth/converters/common",
+    "pkg/geth/converters/rpc",
+    "pkg/geth/node",
+    "pkg/omni/light/converter",
+    "pkg/omni/light/fetcher",
+    "pkg/omni/light/repository",
+    "pkg/omni/light/retriever",
+    "pkg/omni/shared/constants",
+    "pkg/omni/shared/contract",
+    "pkg/omni/shared/fetcher",
+    "pkg/omni/shared/getter",
+    "pkg/omni/shared/helpers",
+    "pkg/omni/shared/helpers/test_helpers/mocks",
+    "pkg/omni/shared/parser",
+    "pkg/omni/shared/types",
+    "pkg/plugin",
+    "pkg/plugin/builder",
     "pkg/plugin/helpers",
+    "pkg/plugin/manager",
+    "pkg/plugin/test_helpers",
+    "pkg/plugin/writer",
   ]
   pruneopts = ""
   revision = "d92b92140afdc25e370ed09b69ad1bc2c5270248"
@@ -417,6 +463,14 @@
   ]
   pruneopts = ""
   revision = "afe646ca25a4a688bba916cc14caef4b53c0b856"
+
+[[projects]]
+  branch = "master"
+  digest = "1:0142c968b74c157abbb0220c05fa2bdde8a3a4509d6134b35ef75d5b58afb721"
+  name = "golang.org/x/sync"
+  packages = ["errgroup"]
+  pruneopts = ""
+  revision = "e225da77a7e68af35c70ccbf71af2b83e6acac3c"
 
 [[projects]]
   branch = "master"
@@ -501,17 +555,43 @@
     "github.com/ethereum/go-ethereum/common/hexutil",
     "github.com/ethereum/go-ethereum/core/types",
     "github.com/ethereum/go-ethereum/crypto",
+    "github.com/ethereum/go-ethereum/ethclient",
+    "github.com/ethereum/go-ethereum/rpc",
+    "github.com/hashicorp/golang-lru",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
     "github.com/sirupsen/logrus",
     "github.com/spf13/viper",
     "github.com/vulcanize/vulcanizedb/libraries/shared/constants",
+    "github.com/vulcanize/vulcanizedb/libraries/shared/factories",
+    "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher",
     "github.com/vulcanize/vulcanizedb/libraries/shared/repository",
     "github.com/vulcanize/vulcanizedb/libraries/shared/transformer",
+    "github.com/vulcanize/vulcanizedb/libraries/shared/watcher",
+    "github.com/vulcanize/vulcanizedb/pkg/config",
     "github.com/vulcanize/vulcanizedb/pkg/core",
+    "github.com/vulcanize/vulcanizedb/pkg/datastore",
     "github.com/vulcanize/vulcanizedb/pkg/datastore/postgres",
+    "github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories",
     "github.com/vulcanize/vulcanizedb/pkg/fakes",
     "github.com/vulcanize/vulcanizedb/pkg/geth",
+    "github.com/vulcanize/vulcanizedb/pkg/geth/client",
+    "github.com/vulcanize/vulcanizedb/pkg/geth/converters/rpc",
+    "github.com/vulcanize/vulcanizedb/pkg/geth/node",
+    "github.com/vulcanize/vulcanizedb/pkg/omni/light/converter",
+    "github.com/vulcanize/vulcanizedb/pkg/omni/light/fetcher",
+    "github.com/vulcanize/vulcanizedb/pkg/omni/light/repository",
+    "github.com/vulcanize/vulcanizedb/pkg/omni/light/retriever",
+    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/constants",
+    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/contract",
+    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/getter",
+    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/helpers",
+    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/helpers/test_helpers/mocks",
+    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/parser",
+    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/types",
+    "github.com/vulcanize/vulcanizedb/pkg/plugin",
+    "github.com/vulcanize/vulcanizedb/pkg/plugin/helpers",
+    "github.com/vulcanize/vulcanizedb/pkg/plugin/test_helpers",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

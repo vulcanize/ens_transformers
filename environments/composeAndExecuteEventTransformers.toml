@@ -34,86 +34,103 @@
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.bid_revealed]
         path = "transformers/registar/bid_revealed/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.hash_invalidated]
         path = "transformers/registar/hash_invalidated/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.hash_registered]
         path = "transformers/registar/hash_registered/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.hash_released]
         path = "transformers/registar/hash_released/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.new_bid]
         path = "transformers/registar/new_bid/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.new_owner]
         path = "transformers/registry/new_owner/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.new_resolver]
         path = "transformers/registry/new_resolver/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.new_ttl]
         path = "transformers/registry/new_ttl/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.transfer]
         path = "transformers/registry/transfer/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.abi_changed]
         path = "transformers/resolver/abi_changed/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.addr_changed]
         path = "transformers/resolver/addr_changed/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.content_changed]
         path = "transformers/resolver/content_changed/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.contenthash_changed]
         path = "transformers/resolver/contenthash_changed/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.multihash_changed]
         path = "transformers/resolver/multihash_changed/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.pubkey_changed]
         path = "transformers/resolver/pubkey_changed/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
     [exporter.text_changed]
         path = "transformers/resolver/text_changed/initializer"
         type = "eth_event"
         repository = "github.com/vulcanize/ens_transformers"
         migrations = "db/migrations"
+        rank = "0"
 
 [contract]
     [contract.address]
