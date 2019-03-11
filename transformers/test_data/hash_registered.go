@@ -55,7 +55,7 @@ var EthHashRegisteredLog = types.Log{
 }
 
 var HashRegisteredEntity = hash_registered.HashRegisteredEntity{
-	Hash:             hash,
+	Hash:             node,
 	Owner:            owner,
 	Value:            value,
 	RegistrationDate: registrationDate,
@@ -65,7 +65,7 @@ var HashRegisteredEntity = hash_registered.HashRegisteredEntity{
 }
 
 var HashRegisteredModel = hash_registered.HashRegisteredModel{
-	Hash:             hash.Hex(),
+	Hash:             node.Hex(),
 	Owner:            owner.Hex(),
 	Value:            value.String(),
 	RegistrationDate: registrationDate.String(),

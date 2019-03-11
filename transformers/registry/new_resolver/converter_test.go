@@ -31,7 +31,7 @@ var _ = Describe("NewResolver Converter", func() {
 	var converter = new_resolver.NewResolverConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a NewResolver entity", func() {
 			entities, err := converter.ToEntities(test_data.RegistryAbi, []types.Log{test_data.EthNewResolverLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -70,8 +70,8 @@ var _ = Describe("NewResolver Converter", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
 			expectedModel := new_resolver.NewResolverModel{
-				Node:             "0000000000000000000000000000000000000000000000000000000000000000",
-				Resolver:         "0000000000000000000000000000000000000000000000000000000000000000",
+				Node:             "0x0000000000000000000000000000000000000000000000000000000000000000",
+				Resolver:         "0x0000000000000000000000000000000000000000",
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}

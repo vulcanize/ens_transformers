@@ -18,7 +18,6 @@ package name_changed_test
 
 import (
 	"encoding/json"
-
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -31,7 +30,7 @@ var _ = Describe("NameChanged Converter", func() {
 	var converter = name_changed.NameChangedConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a NameChanged entity", func() {
 			entities, err := converter.ToEntities(test_data.ResolverAbi, []types.Log{test_data.EthNameChangedLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -70,8 +69,8 @@ var _ = Describe("NameChanged Converter", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
 			expectedModel := name_changed.NameChangedModel{
-				Resolver:         "0000000000000000000000000000000000000000000000000000000000000000",
-				Node:             "0000000000000000000000000000000000000000000000000000000000000000",
+				Resolver:         "0x0000000000000000000000000000000000000000",
+				Node:             "0x0000000000000000000000000000000000000000000000000000000000000000",
 				Name:             "",
 				TransactionIndex: 0,
 				Raw:              emptyLog,

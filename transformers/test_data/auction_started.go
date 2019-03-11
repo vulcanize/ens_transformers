@@ -18,6 +18,7 @@ package test_data
 
 import (
 	"encoding/json"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -29,14 +30,14 @@ import (
 )
 
 const (
-	TemporaryAuctioStartedBlockNumber  = int64(26)
+	TemporaryAuctionStartedBlockNumber  = int64(26)
 	TemporaryAuctionStartedData        = "0x0000000000000000000000000000000000000000000000000000000000000002"
 	TemporaryAuctionStartedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
 	auctionStartedRawJson, _ = json.Marshal(EthAuctionStartedLog)
-	registrationDate         = hexutil.MustDecodeBig(TemporaryAuctionStartedData)
+	registrationDate         = big.NewInt(2)
 )
 
 var EthAuctionStartedLog = types.Log{
@@ -46,7 +47,7 @@ var EthAuctionStartedLog = types.Log{
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),
 	},
 	Data:        hexutil.MustDecode(TemporaryAuctionStartedData),
-	BlockNumber: uint64(TemporaryAuctioStartedBlockNumber),
+	BlockNumber: uint64(TemporaryAuctionStartedBlockNumber),
 	TxHash:      common.HexToHash(TemporaryAuctionStartedTransaction),
 	TxIndex:     111,
 	BlockHash:   fakes.FakeHash,

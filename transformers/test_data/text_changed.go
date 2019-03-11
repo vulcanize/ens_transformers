@@ -30,12 +30,13 @@ import (
 
 const (
 	TemporaryTextChangedBlockNumber = int64(26)
-	TemporaryTextChangedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002"
+	TemporaryTextChangedData        = "0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000a6973737565724e616d6500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a6973737565724e616d6500000000000000000000000000000000000000000000"
 	TemporaryTextChangedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
 	textChangedRawJson, _ = json.Marshal(EthTextChangedLog)
+	key = "issuerName"
 )
 
 var EthTextChangedLog = types.Log{
@@ -54,18 +55,20 @@ var EthTextChangedLog = types.Log{
 }
 
 var TextChangedEntity = text_changed.TextChangedEntity{
+	Resolver:         common.HexToAddress(ResolverAddress),
 	Node:             node,
-	IndexedKey:       x.Hex(),
-	Key:              y.Hex(),
+	IndexedKey:       key,
+	Key:              key,
 	LogIndex:         EthTextChangedLog.Index,
 	TransactionIndex: EthTextChangedLog.TxIndex,
 	Raw:              EthTextChangedLog,
 }
 
 var TextChangedModel = text_changed.TextChangedModel{
+	Resolver:         ResolverAddress,
 	Node:             node.Hex(),
-	IndexedKey:       x.Hex(),
-	Key:              y.Hex(),
+	IndexedKey:       key,
+	Key:              key,
 	LogIndex:         EthTextChangedLog.Index,
 	TransactionIndex: EthTextChangedLog.TxIndex,
 	Raw:              textChangedRawJson,

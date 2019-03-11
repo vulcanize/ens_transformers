@@ -72,7 +72,7 @@ func (converter NewTtlConverter) ToModels(entities []interface{}) ([]interface{}
 
 		model := NewTTLModel{
 			Node:             ttlEntity.Node.Hex(),
-			Ttl:              ttlEntity.Ttl.String(),
+			Ttl:              ttlEntity.Ttl,
 			LogIndex:         logIdx,
 			TransactionIndex: txIdx,
 			Raw:              rawLog,

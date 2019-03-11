@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 )
 
-func TestBite(t *testing.T) {
+func TestAddrChanged(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Addr Changed Suite")
 }

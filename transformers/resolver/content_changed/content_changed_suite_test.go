@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 )
 
-func TestBite(t *testing.T) {
+func TestContentChanged(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Content Changed Suite")
 }

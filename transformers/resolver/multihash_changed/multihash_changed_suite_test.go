@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 )
 
-func TestBite(t *testing.T) {
+func TestMultihashChanged(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Multihash Changed Suite")
 }

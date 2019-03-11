@@ -54,7 +54,7 @@ var EthHashReleasedLog = types.Log{
 }
 
 var HashReleasedEntity = hash_released.HashReleasedEntity{
-	Hash:             hash,
+	Hash:             node,
 	Value:            value,
 	LogIndex:         EthHashReleasedLog.Index,
 	TransactionIndex: EthHashReleasedLog.TxIndex,
@@ -62,7 +62,7 @@ var HashReleasedEntity = hash_released.HashReleasedEntity{
 }
 
 var HashReleasedModel = hash_released.HashReleasedModel{
-	Hash:             hash.Hex(),
+	Hash:             node.Hex(),
 	Value:            value.String(),
 	LogIndex:         EthHashReleasedLog.Index,
 	TransactionIndex: EthHashReleasedLog.TxIndex,

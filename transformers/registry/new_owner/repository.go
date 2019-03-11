@@ -52,10 +52,10 @@ func (repository NewOwnerRepository) Create(headerID int64, models []interface{}
 		}
 
 		_, execErr := tx.Exec(
-			`INSERT into ens.new_owner (header_id, node, label, owner, log_idx, tx_idx, raw_log)
-        			VALUES($1, $2, $3, $4, $5, $6, $7)
-					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET node = $2, label = $3, owner = $4, raw_log = $7;`,
-			headerID, ownerModel.Node, ownerModel.Label, ownerModel.Owner, ownerModel.LogIndex, ownerModel.TransactionIndex, ownerModel.Raw,
+			`INSERT into ens.new_owner (header_id, node, label, owner, subnode, log_idx, tx_idx, raw_log)
+        			VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+					ON CONFLICT (header_id, tx_idx, log_idx) DO UPDATE SET node = $2, label = $3, owner = $4, subnode = $5, raw_log = $8;`,
+			headerID, ownerModel.Node, ownerModel.Label, ownerModel.Owner, ownerModel.Subnode, ownerModel.LogIndex, ownerModel.TransactionIndex, ownerModel.Raw,
 		)
 		if execErr != nil {
 			rollbackErr := tx.Rollback()

@@ -19,7 +19,7 @@ package text_changed
 type TextChangedModel struct {
 	Resolver         string
 	Node             string
-	IndexedKey       string
+	IndexedKey       string `db:"indexed_key"`
 	Key              string
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`

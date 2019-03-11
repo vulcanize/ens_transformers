@@ -31,7 +31,7 @@ var _ = Describe("MultihashChanged Converter", func() {
 	var converter = multihash_changed.MultihashChangedConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a MultihashChanged entity", func() {
 			entities, err := converter.ToEntities(test_data.CompleteResolverAbi, []types.Log{test_data.EthMultihashChangedLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -70,9 +70,9 @@ var _ = Describe("MultihashChanged Converter", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
 			expectedModel := multihash_changed.MultihashChangedModel{
-				Resolver:         "0000000000000000000000000000000000000000000000000000000000000000",
-				Node:             "0000000000000000000000000000000000000000000000000000000000000000",
-				Hash:             "0000000000000000000000000000000000000000000000000000000000000000",
+				Resolver:         "0x0000000000000000000000000000000000000000",
+				Node:             "0x0000000000000000000000000000000000000000000000000000000000000000",
+				Hash:             nil,
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}

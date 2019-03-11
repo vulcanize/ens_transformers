@@ -18,7 +18,6 @@ package test_data
 
 import (
 	"encoding/json"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -36,7 +35,6 @@ const (
 
 var (
 	newTtlRawJson, _ = json.Marshal(EthNewTtlLog)
-	ttl              = hexutil.MustDecodeBig("0x0000000000000000000000000000000000000000000000000000000000000004")
 )
 
 var EthNewTtlLog = types.Log{
@@ -56,7 +54,7 @@ var EthNewTtlLog = types.Log{
 
 var NewTtlEntity = new_ttl.NewTTLEntity{
 	Node:             node,
-	Ttl:              ttl,
+	Ttl:              4,
 	LogIndex:         EthNewTtlLog.Index,
 	TransactionIndex: EthNewTtlLog.TxIndex,
 	Raw:              EthNewTtlLog,
@@ -64,7 +62,7 @@ var NewTtlEntity = new_ttl.NewTTLEntity{
 
 var NewTtlModel = new_ttl.NewTTLModel{
 	Node:             node.Hex(),
-	Ttl:              ttl.String(),
+	Ttl:              4,
 	LogIndex:         EthNewTtlLog.Index,
 	TransactionIndex: EthNewTtlLog.TxIndex,
 	Raw:              newTtlRawJson,

@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 )
 
-func TestBite(t *testing.T) {
+func TestNewOwner(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "New Owner Suite")
 }

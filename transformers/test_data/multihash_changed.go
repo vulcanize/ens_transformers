@@ -30,7 +30,7 @@ import (
 
 const (
 	TemporaryMultihashChangedBlockNumber = int64(26)
-	TemporaryMultihashChangedData        = "0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"
+	TemporaryMultihashChangedData        = "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000026e40101701b206c41b0e4e24593f5155277e2a1ec45545db24d424974eb71173421523db0e2a60000000000000000000000000000000000000000000000000000"
 	TemporaryMultihashChangedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
@@ -56,7 +56,7 @@ var EthMultihashChangedLog = types.Log{
 var MultihashChangedEntity = multihash_changed.MultihashChangedEntity{
 	Resolver:         common.HexToAddress(ResolverAddress),
 	Node:             node,
-	Hash:             hash.Bytes(),
+	Hash:             targetHash,
 	LogIndex:         EthMultihashChangedLog.Index,
 	TransactionIndex: EthMultihashChangedLog.TxIndex,
 	Raw:              EthMultihashChangedLog,
@@ -65,7 +65,7 @@ var MultihashChangedEntity = multihash_changed.MultihashChangedEntity{
 var MultihashChangedModel = multihash_changed.MultihashChangedModel{
 	Resolver:         ResolverAddress,
 	Node:             node.Hex(),
-	Hash:             hash.Bytes(),
+	Hash:             targetHash,
 	LogIndex:         EthMultihashChangedLog.Index,
 	TransactionIndex: EthMultihashChangedLog.TxIndex,
 	Raw:              multihashChangedRawJson,

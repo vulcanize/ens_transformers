@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 )
 
-func TestBite(t *testing.T) {
+func TestNewResolver(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "New Resolver Suite")
 }

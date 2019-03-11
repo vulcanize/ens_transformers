@@ -18,6 +18,7 @@ package new_bid_test
 
 import (
 	"encoding/json"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
@@ -31,7 +32,7 @@ var _ = Describe("NewBid Converter", func() {
 	var converter = new_bid.NewBidConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a NewBid entity", func() {
 			entities, err := converter.ToEntities(test_data.RegistarAbi, []types.Log{test_data.EthNewBidLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -69,10 +70,11 @@ var _ = Describe("NewBid Converter", func() {
 		It("handles nil values", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
+			var temp *big.Int
 			expectedModel := new_bid.NewBidModel{
-				Hash:             "0000000000000000000000000000000000000000000000000000000000000000",
-				Bidder:           "0000000000000000000000000000000000000000000000000000000000000000",
-				Deposit:          "",
+				Hash:             "0x0000000000000000000000000000000000000000000000000000000000000000",
+				Bidder:           "0x0000000000000000000000000000000000000000",
+				Deposit:          temp.String(),
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}

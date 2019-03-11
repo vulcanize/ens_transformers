@@ -1,1 +1,5 @@
 .idea/
+.vscode
+vulcanizedb
+vulcanizedb.log
+db/migrations/00*.sql

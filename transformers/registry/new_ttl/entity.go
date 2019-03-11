@@ -19,12 +19,11 @@ package new_ttl
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"math/big"
 )
 
 type NewTTLEntity struct {
 	Node             common.Hash
-	Ttl              *big.Int
+	Ttl              uint64
 	LogIndex         uint
 	TransactionIndex uint
 	Raw              types.Log

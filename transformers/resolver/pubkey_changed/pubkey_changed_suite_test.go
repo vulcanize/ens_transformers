@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 )
 
-func TestBite(t *testing.T) {
+func TestPubkeyChanged(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Pubkey Changed Suite")
 }

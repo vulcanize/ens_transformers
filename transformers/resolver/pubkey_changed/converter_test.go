@@ -31,7 +31,7 @@ var _ = Describe("PubkeyChanged Converter", func() {
 	var converter = pubkey_changed.PubkeyChangedConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a PubkeyChanged entity", func() {
 			entities, err := converter.ToEntities(test_data.ResolverAbi, []types.Log{test_data.EthPubkeyChangedLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -70,10 +70,10 @@ var _ = Describe("PubkeyChanged Converter", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
 			expectedModel := pubkey_changed.PubkeyChangedModel{
-				Resolver:         "0000000000000000000000000000000000000000000000000000000000000000",
-				Node:             "0000000000000000000000000000000000000000000000000000000000000000",
-				X:                "0000000000000000000000000000000000000000000000000000000000000000",
-				Y:                "0000000000000000000000000000000000000000000000000000000000000000",
+				Resolver:         "0x0000000000000000000000000000000000000000",
+				Node:             "0x0000000000000000000000000000000000000000000000000000000000000000",
+				X:                "0x0000000000000000000000000000000000000000000000000000000000000000",
+				Y:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}

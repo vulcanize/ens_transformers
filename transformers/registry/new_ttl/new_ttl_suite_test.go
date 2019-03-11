@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 )
 
-func TestBite(t *testing.T) {
+func TestNewTTL(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "New TTL Suite")
 }
