@@ -31,7 +31,7 @@ var _ = Describe("Transfer Converter", func() {
 	var converter = transfer.TransferConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a TestTransfer entity", func() {
 			entities, err := converter.ToEntities(test_data.RegistryAbi, []types.Log{test_data.EthTransferLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -70,8 +70,8 @@ var _ = Describe("Transfer Converter", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
 			expectedModel := transfer.TransferModel{
-				Node:             "0000000000000000000000000000000000000000000000000000000000000000",
-				Owner:            "0000000000000000000000000000000000000000000000000000000000000000",
+				Node:             "0x0000000000000000000000000000000000000000000000000000000000000000",
+				Owner:            "0x0000000000000000000000000000000000000000",
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}

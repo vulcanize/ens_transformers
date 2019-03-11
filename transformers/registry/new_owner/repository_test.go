@@ -33,15 +33,15 @@ import (
 
 var _ = Describe("NewOwner repository", func() {
 	var (
-		hashInvalidatedRepository new_owner.NewOwnerRepository
+		newOwnerRepository new_owner.NewOwnerRepository
 		db                        *postgres.DB
 	)
 
 	BeforeEach(func() {
 		db = test_config.NewTestDB(test_config.NewTestNode())
 		test_config.CleanTestDB(db)
-		hashInvalidatedRepository = new_owner.NewOwnerRepository{}
-		hashInvalidatedRepository.SetDB(db)
+		newOwnerRepository = new_owner.NewOwnerRepository{}
+		newOwnerRepository.SetDB(db)
 	})
 
 	Describe("Create", func() {
@@ -52,7 +52,7 @@ var _ = Describe("NewOwner repository", func() {
 			LogEventTableName:        "ens.new_owner",
 			TestModel:                test_data.NewOwnerModel,
 			ModelWithDifferentLogIdx: modelWithDifferentLogIdx,
-			Repository:               &hashInvalidatedRepository,
+			Repository:               &newOwnerRepository,
 		}
 
 		shared_behaviors.SharedRepositoryCreateBehaviors(&inputs)
@@ -62,7 +62,7 @@ var _ = Describe("NewOwner repository", func() {
 			headerID, err := headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = hashInvalidatedRepository.Create(headerID, []interface{}{test_data.NewOwnerModel})
+			err = newOwnerRepository.Create(headerID, []interface{}{test_data.NewOwnerModel})
 
 			Expect(err).NotTo(HaveOccurred())
 			var dbNewOwner new_owner.NewOwnerModel
@@ -80,7 +80,7 @@ var _ = Describe("NewOwner repository", func() {
 	Describe("MarkHeaderChecked", func() {
 		inputs := shared_behaviors.MarkedHeaderCheckedBehaviorInputs{
 			CheckedHeaderColumnName: constants.NewOwnerChecked,
-			Repository:              &hashInvalidatedRepository,
+			Repository:              &newOwnerRepository,
 		}
 
 		shared_behaviors.SharedRepositoryMarkHeaderCheckedBehaviors(&inputs)

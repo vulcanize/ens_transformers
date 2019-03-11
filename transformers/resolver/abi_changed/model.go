@@ -19,7 +19,7 @@ package abi_changed
 type AbiChangedModel struct {
 	Resolver         string
 	Node             string
-	ContentType      string
+	ContentType      string `db:"content_type"`
 	LogIndex         uint   `db:"log_idx"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`

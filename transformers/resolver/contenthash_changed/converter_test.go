@@ -18,7 +18,6 @@ package contenthash_changed_test
 
 import (
 	"encoding/json"
-
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -31,7 +30,7 @@ var _ = Describe("ContenthashChanged Converter", func() {
 	var converter = contenthash_changed.ContenthashChangedConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a ContenthashChanged entity", func() {
 			entities, err := converter.ToEntities(test_data.CompleteResolverAbi, []types.Log{test_data.EthContenthashChangedLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -70,9 +69,9 @@ var _ = Describe("ContenthashChanged Converter", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
 			expectedModel := contenthash_changed.ContenthashChangedModel{
-				Resolver:         "0000000000000000000000000000000000000000000000000000000000000000",
-				Node:             "0000000000000000000000000000000000000000000000000000000000000000",
-				Hash:             "0000000000000000000000000000000000000000000000000000000000000000",
+				Resolver:         "0x0000000000000000000000000000000000000000",
+				Node:             "0x0000000000000000000000000000000000000000000000000000000000000000",
+				Hash:             nil,
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}

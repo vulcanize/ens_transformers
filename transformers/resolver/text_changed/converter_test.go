@@ -31,7 +31,7 @@ var _ = Describe("TextChanged Converter", func() {
 	var converter = text_changed.TextChangedConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a TextChanged entity", func() {
 			entities, err := converter.ToEntities(test_data.CompleteResolverAbi, []types.Log{test_data.EthTextChangedLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -70,8 +70,8 @@ var _ = Describe("TextChanged Converter", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
 			expectedModel := text_changed.TextChangedModel{
-				Resolver:         "0000000000000000000000000000000000000000000000000000000000000000",
-				Node:             "0000000000000000000000000000000000000000000000000000000000000000",
+				Resolver:         "0x0000000000000000000000000000000000000000",
+				Node:             "0x0000000000000000000000000000000000000000000000000000000000000000",
 				Key:              "",
 				IndexedKey:       "",
 				TransactionIndex: 0,

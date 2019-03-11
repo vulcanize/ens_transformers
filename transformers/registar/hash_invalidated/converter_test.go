@@ -18,6 +18,7 @@ package hash_invalidated_test
 
 import (
 	"encoding/json"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
@@ -31,7 +32,7 @@ var _ = Describe("HashInvalidated Converter", func() {
 	var converter = hash_invalidated.HashInvalidatedConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a HashInvalidated entity", func() {
 			entities, err := converter.ToEntities(test_data.RegistarAbi, []types.Log{test_data.EthHashInvalidatedLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -69,11 +70,12 @@ var _ = Describe("HashInvalidated Converter", func() {
 		It("handles nil values", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
+			var temp *big.Int
 			expectedModel := hash_invalidated.HashInvalidatedModel{
-				Hash:             "0000000000000000000000000000000000000000000000000000000000000000",
+				Hash:             "0x0000000000000000000000000000000000000000000000000000000000000000",
 				Name:             "",
-				Value:            "",
-				RegistrationDate: 0,
+				Value:            temp.String(),
+				RegistrationDate: temp.String(),
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}

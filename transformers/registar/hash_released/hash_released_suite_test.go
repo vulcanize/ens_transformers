@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 )
 
-func TestBite(t *testing.T) {
+func TestHashReleased(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Hash Released Suite")
 }

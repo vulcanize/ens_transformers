@@ -30,12 +30,13 @@ import (
 
 const (
 	TemporaryContenthashChangedBlockNumber = int64(26)
-	TemporaryContenthashChangedData        = "0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"
+	TemporaryContenthashChangedData = "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000026e40101701b206c41b0e4e24593f5155277e2a1ec45545db24d424974eb71173421523db0e2a60000000000000000000000000000000000000000000000000000"
 	TemporaryContenthashChangedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
 	contenthashChangedRawJson, _ = json.Marshal(EthContenthashChangedLog)
+	targetHash = []byte{228, 1, 1, 112, 27, 32, 108, 65, 176, 228, 226, 69, 147, 245, 21, 82, 119, 226, 161, 236, 69, 84, 93, 178, 77, 66, 73, 116, 235, 113, 23, 52, 33, 82, 61, 176, 226, 166}
 )
 
 var EthContenthashChangedLog = types.Log{
@@ -56,7 +57,7 @@ var EthContenthashChangedLog = types.Log{
 var ContenthashChangedEntity = contenthash_changed.ContenthashChangedEntity{
 	Resolver:         common.HexToAddress(ResolverAddress),
 	Node:             node,
-	Hash:             hash.Bytes(),
+	Hash:             targetHash,
 	LogIndex:         EthContenthashChangedLog.Index,
 	TransactionIndex: EthContenthashChangedLog.TxIndex,
 	Raw:              EthContenthashChangedLog,
@@ -65,7 +66,7 @@ var ContenthashChangedEntity = contenthash_changed.ContenthashChangedEntity{
 var ContenthashChangedModel = contenthash_changed.ContenthashChangedModel{
 	Resolver:         ResolverAddress,
 	Node:             node.Hex(),
-	Hash:             hash.Bytes(),
+	Hash:             targetHash,
 	LogIndex:         EthContenthashChangedLog.Index,
 	TransactionIndex: EthContenthashChangedLog.TxIndex,
 	Raw:              contenthashChangedRawJson,

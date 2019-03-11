@@ -36,7 +36,6 @@ const (
 
 var (
 	hashInvalidatedRawJson, _ = json.Marshal(EthHashInvalidatedLog)
-	name                      = "0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"
 )
 
 var EthHashInvalidatedLog = types.Log{
@@ -44,7 +43,7 @@ var EthHashInvalidatedLog = types.Log{
 	Topics: []common.Hash{
 		common.HexToHash("0x99b5620489b6ef926d4518936cfec15d305452712b88bd59da2d9c10fb0953e8"),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),
-		common.HexToHash("0x0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"),
+		common.BytesToHash([]byte("testName")),
 	},
 	Data:        hexutil.MustDecode(TemporaryHashInvalidatedData),
 	BlockNumber: uint64(TemporaryHashInvalidatedBlockNumber),
@@ -56,8 +55,8 @@ var EthHashInvalidatedLog = types.Log{
 }
 
 var HashInvalidatedEntity = hash_invalidated.HashInvalidatedEntity{
-	Hash:             hash,
-	Name:             name,
+	Hash:             node,
+	Name:             "testName",
 	Value:            value,
 	RegistrationDate: registrationDate,
 	LogIndex:         EthHashInvalidatedLog.Index,
@@ -66,8 +65,8 @@ var HashInvalidatedEntity = hash_invalidated.HashInvalidatedEntity{
 }
 
 var HashInvalidatedModel = hash_invalidated.HashInvalidatedModel{
-	Hash:             hash.Hex(),
-	Name:             name,
+	Hash:             node.Hex(),
+	Name:             "testName",
 	Value:            value.String(),
 	RegistrationDate: registrationDate.String(),
 	LogIndex:         EthHashInvalidatedLog.Index,

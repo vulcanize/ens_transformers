@@ -31,7 +31,7 @@ var _ = Describe("NewOwner Converter", func() {
 	var converter = new_owner.NewOwnerConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a NewOwner entity", func() {
 			entities, err := converter.ToEntities(test_data.RegistryAbi, []types.Log{test_data.EthNewOwnerLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -70,9 +70,10 @@ var _ = Describe("NewOwner Converter", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
 			expectedModel := new_owner.NewOwnerModel{
-				Node:             "0000000000000000000000000000000000000000000000000000000000000000",
-				Label:            "0000000000000000000000000000000000000000000000000000000000000000",
-				Owner:            "0000000000000000000000000000000000000000000000000000000000000000",
+				Node:             "0x0000000000000000000000000000000000000000000000000000000000000000",
+				Label:            "0x0000000000000000000000000000000000000000000000000000000000000000",
+				Owner:            "0x0000000000000000000000000000000000000000",
+				Subnode:          "0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5",
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}

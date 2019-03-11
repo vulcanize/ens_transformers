@@ -18,6 +18,7 @@ package auction_started_test
 
 import (
 	"encoding/json"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
@@ -31,7 +32,7 @@ var _ = Describe("AuctionStarted Converter", func() {
 	var converter = auction_started.AuctionStartedConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a AuctionStarted entity", func() {
 			entities, err := converter.ToEntities(test_data.RegistarAbi, []types.Log{test_data.EthAuctionStartedLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -69,9 +70,10 @@ var _ = Describe("AuctionStarted Converter", func() {
 		It("handles nil values", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
+			var temp *big.Int
 			expectedModel := auction_started.AuctionStartedModel{
-				Hash:             "0000000000000000000000000000000000000000000000000000000000000000",
-				RegistrationDate: 0,
+				Hash:             "0x0000000000000000000000000000000000000000000000000000000000000000",
+				RegistrationDate: temp.String(),
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}

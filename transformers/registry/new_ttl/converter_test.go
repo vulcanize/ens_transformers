@@ -18,7 +18,6 @@ package new_ttl_test
 
 import (
 	"encoding/json"
-
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -31,7 +30,7 @@ var _ = Describe("NewTtl Converter", func() {
 	var converter = new_ttl.NewTtlConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a NewTTL entity", func() {
 			entities, err := converter.ToEntities(test_data.RegistryAbi, []types.Log{test_data.EthNewTtlLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -63,15 +62,15 @@ var _ = Describe("NewTtl Converter", func() {
 			_, err := converter.ToModels([]interface{}{test_data.WrongEntity{}})
 
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("entity of type test_data.WrongEntity, not new_ttl.NewTtlEntity"))
+			Expect(err.Error()).To(ContainSubstring("entity of type test_data.WrongEntity, not new_ttl.NewTTLEntity"))
 		})
 
 		It("handles nil values", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
 			expectedModel := new_ttl.NewTTLModel{
-				Node:             "0000000000000000000000000000000000000000000000000000000000000000",
-				Ttl:              "",
+				Node:             "0x0000000000000000000000000000000000000000000000000000000000000000",
+				Ttl:              0,
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}

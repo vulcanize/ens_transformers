@@ -30,14 +30,14 @@ import (
 
 const (
 	TemporaryPubkeyChangedBlockNumber = int64(26)
-	TemporaryPubkeyChangedData        = "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002"
+	TemporaryPubkeyChangedData        = "0x952e25626ff3bb77e2c896c259362efcb621b96aed268faacfbd1e6d7a539f9b3102b2896ee73d9b52ff39c72f007b46b38d8e9c142dcaf0648d9b46fb81cd77"
 	TemporaryPubkeyChangedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )
 
 var (
 	pubkeyChangedRawJson, _ = json.Marshal(EthPubkeyChangedLog)
-	x                       = common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000001")
-	y                       = common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000002")
+	x                       = common.BytesToHash([]byte{149, 46, 37, 98, 111, 243, 187, 119, 226, 200, 150, 194, 89, 54, 46, 252, 182, 33, 185, 106, 237, 38, 143, 170, 207, 189, 30, 109, 122, 83, 159, 155})
+	y                       = common.BytesToHash([]byte{49, 2, 178, 137, 110, 231, 61, 155, 82, 255, 57, 199, 47, 0, 123, 70, 179, 141, 142, 156, 20, 45, 202, 240, 100, 141, 155, 70, 251, 129, 205, 119})
 )
 
 var EthPubkeyChangedLog = types.Log{
@@ -56,6 +56,7 @@ var EthPubkeyChangedLog = types.Log{
 }
 
 var PubkeyChangedEntity = pubkey_changed.PubkeyChangedEntity{
+	Resolver:         common.HexToAddress(ResolverAddress),
 	Node:             node,
 	X:                x,
 	Y:                y,
@@ -65,6 +66,7 @@ var PubkeyChangedEntity = pubkey_changed.PubkeyChangedEntity{
 }
 
 var PubkeyChangedModel = pubkey_changed.PubkeyChangedModel{
+	Resolver:         ResolverAddress,
 	Node:             node.Hex(),
 	X:                x.Hex(),
 	Y:                y.Hex(),

@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 )
 
-func TestBite(t *testing.T) {
+func TestBidRevealed(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Bid Revealed Suite")
 }

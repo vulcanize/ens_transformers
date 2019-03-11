@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 )
 
-func TestBite(t *testing.T) {
+func TestContenthashChanged(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Contenthash Changed Suite")
 }

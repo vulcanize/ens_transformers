@@ -18,6 +18,7 @@ package abi_changed_test
 
 import (
 	"encoding/json"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
@@ -31,7 +32,7 @@ var _ = Describe("AbiChanged Converter", func() {
 	var converter = abi_changed.AbiChangedConverter{}
 
 	Describe("ToEntity", func() {
-		It("converts an eth log to a bite entity", func() {
+		It("converts an eth log to a AbiChanged entity", func() {
 			entities, err := converter.ToEntities(test_data.ResolverAbi, []types.Log{test_data.EthAbiChangedLog})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -69,10 +70,11 @@ var _ = Describe("AbiChanged Converter", func() {
 		It("handles nil values", func() {
 			emptyLog, err := json.Marshal(types.Log{})
 			Expect(err).NotTo(HaveOccurred())
+			var temp *big.Int
 			expectedModel := abi_changed.AbiChangedModel{
-				Resolver:         "0000000000000000000000000000000000000000000000000000000000000000",
-				Node:             "0000000000000000000000000000000000000000000000000000000000000000",
-				ContentType:      "",
+				Resolver:         "0x0000000000000000000000000000000000000000",
+				Node:             "0x0000000000000000000000000000000000000000000000000000000000000000",
+				ContentType:      temp.String(),
 				TransactionIndex: 0,
 				Raw:              emptyLog,
 			}

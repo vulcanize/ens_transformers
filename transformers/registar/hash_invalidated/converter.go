@@ -19,6 +19,8 @@ package hash_invalidated
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -32,6 +34,7 @@ func (HashInvalidatedConverter) ToEntities(contractAbi string, ethLogs []types.L
 	var entities []interface{}
 	for _, ethLog := range ethLogs {
 		entity := &HashInvalidatedEntity{}
+		intermediateMap := map[string]interface{}{}
 		address := ethLog.Address
 		abi, err := geth.ParseAbi(contractAbi)
 		if err != nil {
@@ -40,11 +43,15 @@ func (HashInvalidatedConverter) ToEntities(contractAbi string, ethLogs []types.L
 
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
 
-		err = contract.UnpackLog(entity, "HashInvalidated", ethLog)
+		err = contract.UnpackLogIntoMap(intermediateMap, "HashInvalidated", ethLog)
 		if err != nil {
 			return nil, err
 		}
 
+		entity.Hash = common.BytesToHash(intermediateMap["hash"].([]uint8))
+		entity.Value = intermediateMap["value"].(*big.Int)
+		entity.Name = intermediateMap["name"].(string)
+		entity.RegistrationDate = intermediateMap["registrationDate"].(*big.Int)
 		entity.Raw = ethLog
 		entity.LogIndex = ethLog.Index
 		entity.TransactionIndex = ethLog.TxIndex

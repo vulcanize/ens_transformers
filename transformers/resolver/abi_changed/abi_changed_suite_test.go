@@ -25,7 +25,7 @@ import (
 	"io/ioutil"
 )
 
-func TestBite(t *testing.T) {
+func TestABIChanged(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "ABI Changed Suite")
 }

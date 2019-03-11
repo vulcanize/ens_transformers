@@ -19,7 +19,6 @@ package contenthash_changed
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
 
@@ -69,7 +68,7 @@ func (converter ContenthashChangedConverter) ToModels(entities []interface{}) ([
 		if err != nil {
 			return nil, err
 		}
-
+		println(string(contentEntity.Hash))
 		model := ContenthashChangedModel{
 			Resolver:         contentEntity.Resolver.Hex(),
 			Node:             contentEntity.Node.Hex(),
