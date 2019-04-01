@@ -1,0 +1,29 @@
+dist: trusty
+language: go
+go:
+  - 1.11
+services:
+  - postgresql
+addons:
+  postgresql: '9.6'
+  ssh_known_hosts:
+  - 147.75.96.51
+go_import_path: github.com/vulcanize/ens_transformers
+before_install:
+  - make installtools
+  - bash ./scripts/install-postgres-10.sh
+  - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+  - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+  - sudo apt-get update && sudo apt-get install yarn
+before_script:
+  - sudo -u postgres createdb vulcanize_private
+  - make version_migrations
+  - make migrate NAME=vulcanize_private
+script:
+  - make test
+  - make integrationtest
+notifications:
+  email: false
+env:
+  matrix:
+    secure: PBYboOCyTSm2Jh+vLAE3ebBs20FphWywirJxXFnL7JpQ4HZqhRei+pA/fX2ino68zuOrVmJzh8gnohRo5HEzFzIUH40Qk4LonOFByEu5evwaBIVt62CyXTl7DE1bJCCkJcJ5uMo8h2Xunw5oUUSTjutRSv0uL6SJutZu1v0ZN5CH2adhNzjypvwk7POf6kBpEzAym70fGIJKjNdVF65aDYdJXTdt9EFs9v4dgcKzGpmV/k7JX1sBZWt4GYFLK7Ow22KWWIYRM5TerXhoMO2RQ3hbcJOQ1pYrlGDD/zer2vAH91x5PQQu63oniRJlVcIxnGQ+mXjd3a6aiiMSAPaOchjf17PNUOnHtf6v0ph1qKtvLp848vh90VEIPj3p9RNSqU9m8dMXz2uWOe947Aa4SMYjf7BWYzubkmF4w9iyEB1dQWTAvTgIfGJtHJmEms9AsnAaAqcIEaxpC/U++mguNy8DP3rmiGCBbUFVNBslhGZv4Nvms1T8G+v1fRNcSBuHMJ+u8jWJ7+7u9Qa3N2DAbmNka7W+txGLHc4pnb8NFlqXEuWneDCt4CosA5mK6rv6krcD2bYizAxm8RTwozVa3R8ZIW+1MuRB30uSD//eEGw9/HjrQJ/Ft94/J1F+XSTY40iX3cx49GHz/GNaqHRBZlj9Mn0/LKX1BgeNqsH0UQM=
