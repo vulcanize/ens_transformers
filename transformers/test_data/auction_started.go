@@ -30,7 +30,7 @@ import (
 )
 
 const (
-	TemporaryAuctionStartedBlockNumber  = int64(26)
+	TemporaryAuctionStartedBlockNumber = int64(26)
 	TemporaryAuctionStartedData        = "0x0000000000000000000000000000000000000000000000000000000000000002"
 	TemporaryAuctionStartedTransaction = "0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"
 )

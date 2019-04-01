@@ -42,7 +42,7 @@ var composeCmd = &cobra.Command{
     port     = 5432
 
 [client]
-    ipcPath  = "http://kovan0.vulcanize.io:8545"
+    ipcPath  = "/Users/user/Library/Ethereum/geth.ipc"
 
 [exporter]
     home     = "github.com/vulcanize/vulcanizedb"
@@ -62,10 +62,10 @@ var composeCmd = &cobra.Command{
         rank = "0"
     [exporter.transformer2]
         path = "path/to/transformer2"
-        type = "eth_event"
+        type = "eth_contract"
         repository = "github.com/account/repo"
         migrations = "db/migrations"
-        rank = "2"
+        rank = "0"
     [exporter.transformer3]
         path = "path/to/transformer3"
         type = "eth_event"
@@ -91,7 +91,9 @@ from it and loaded into and executed over by the appropriate watcher.
 The type of watcher that the transformer works with is specified using the 
 type variable for each transformer in the config. Currently there are watchers 
 of event data from an eth node (eth_event) and storage data from an eth node 
-(eth_storage).
+(eth_storage), and a more generic interface for accepting contract_watcher pkg
+based transformers which can perform both event watching and public method 
+polling (eth_contract).
 
 Transformers of different types can be ran together in the same command using a 
 single config file or in separate command instances using different config files
@@ -153,9 +155,9 @@ func prepConfig() {
 		if !mrOK || mr == "" {
 			log.Fatal(name, "transformer config is missing `rank` value")
 		}
-		rank, err := strconv.Atoi(mr)
+		rank, err := strconv.ParseUint(mr, 10, 64)
 		if err != nil {
-			log.Fatal(name, "migration `rank` can't be converted to an integer")
+			log.Fatal(name, "migration `rank` can't be converted to an unsigned integer")
 		}
 		t, tOK := transformer["type"]
 		if !tOK {

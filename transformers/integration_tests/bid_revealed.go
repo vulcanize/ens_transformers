@@ -17,24 +17,21 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
-
 	"github.com/vulcanize/ens_transformers/test_config"
 	"github.com/vulcanize/ens_transformers/transformers/registar/bid_revealed"
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 	"github.com/vulcanize/ens_transformers/transformers/test_data"
+	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var testBidRevealedConfig = transformer.TransformerConfig{
+var testBidRevealedConfig = transformer.EventTransformerConfig{
 	TransformerName:     constants.BidRevealedLabel,
 	ContractAddresses:   []string{test_data.RegistarAddress},
 	ContractAbi:         test_data.RegistarAbi,
@@ -44,8 +41,8 @@ var testBidRevealedConfig = transformer.TransformerConfig{
 }
 
 var _ = Describe("BidRevealed Transformer", func() {
-	It("fetches and transforms a BidRevealed event from mainnet chain", func() {
-		blockNumber := int64(8956422)
+	XIt("fetches and transforms a BidRevealed event from mainnet chain", func() {
+		blockNumber := int64(7381918)
 		config := testBidRevealedConfig
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -56,12 +53,12 @@ var _ = Describe("BidRevealed Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &bid_revealed.BidRevealedConverter{},
 			Repository: &bid_revealed.BidRevealedRepository{},
@@ -83,27 +80,22 @@ var _ = Describe("BidRevealed Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(dbResult)).To(Equal(1))
 		res := dbResult[0]
-		Expect(res.Hash).To(Equal("0000"))
-		Expect(res.Owner).To(Equal(""))
-		Expect(res.Value).To(Equal(""))
-		Expect(res.Status).To(Equal(0))
+		Expect(res.Hash).To(Equal("0xef440a7212852e48c84cb87cf59ce4a0139bf2824549231d2b762db6698ec2cd"))
+		Expect(res.Owner).To(Equal("0x000000000000000000000000db6189758f3cc6f0251b938c068a3ed1b0e86569"))
+		Expect(res.Value).To(Equal("10000000000000000"))
+		Expect(res.Status).To(Equal(2))
 		Expect(res.TransactionIndex).To(Equal(0))
 		Expect(res.LogIndex).To(Equal(0))
 	})
 
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.RegistarAddress)
-		abi, err := geth.ParseAbi(test_data.RegistarAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &bid_revealed.BidRevealedEntity{}
-
+		converter := bid_revealed.BidRevealedConverter{}
 		var eventLog = test_data.EthBidRevealedLog
-
-		err = contract.UnpackLog(entity, "BidRevealed", eventLog)
+		entities, err := converter.ToEntities(test_data.RegistarAbi, []types.Log{eventLog})
 		Expect(err).NotTo(HaveOccurred())
-
+		Expect(len(entities)).To(Equal(1))
+		entity, ok := entities[0].(bid_revealed.BidRevealedEntity)
+		Expect(ok).To(Equal(true))
 		expectedEntity := test_data.BidRevealedEntity
 		Expect(entity.Hash).To(Equal(expectedEntity.Hash))
 		Expect(entity.Owner).To(Equal(expectedEntity.Owner))
@@ -111,8 +103,8 @@ var _ = Describe("BidRevealed Transformer", func() {
 		Expect(entity.Status).To(Equal(expectedEntity.Status))
 	})
 
-	It("rechecks header for bid_revealed event", func() {
-		blockNumber := int64(8956422)
+	XIt("rechecks header for bid_revealed event", func() {
+		blockNumber := int64(7381918)
 		config := testBidRevealedConfig
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -123,12 +115,12 @@ var _ = Describe("BidRevealed Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &bid_revealed.BidRevealedConverter{},
 			Repository: &bid_revealed.BidRevealedRepository{},
@@ -157,25 +149,5 @@ var _ = Describe("BidRevealed Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(bid_revealedChecked[0]).To(Equal(2))
-	})
-
-	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.RegistarAddress)
-		abi, err := geth.ParseAbi(test_data.RegistarAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &bid_revealed.BidRevealedEntity{}
-
-		var eventLog = test_data.EthBidRevealedLog
-
-		err = contract.UnpackLog(entity, "BidRevealed", eventLog)
-		Expect(err).NotTo(HaveOccurred())
-
-		expectedEntity := test_data.BidRevealedEntity
-		Expect(entity.Hash).To(Equal(expectedEntity.Hash))
-		Expect(entity.Owner).To(Equal(expectedEntity.Owner))
-		Expect(entity.Value).To(Equal(expectedEntity.Value))
-		Expect(entity.Status).To(Equal(expectedEntity.Status))
 	})
 })

@@ -17,24 +17,21 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
-
 	"github.com/vulcanize/ens_transformers/test_config"
 	"github.com/vulcanize/ens_transformers/transformers/registar/auction_started"
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 	"github.com/vulcanize/ens_transformers/transformers/test_data"
+	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var testAuctionStartedConfig = transformer.TransformerConfig{
+var testAuctionStartedConfig = transformer.EventTransformerConfig{
 	TransformerName:     constants.AuctionStartedLabel,
 	ContractAddresses:   []string{test_data.RegistarAddress},
 	ContractAbi:         test_data.RegistarAbi,
@@ -44,8 +41,8 @@ var testAuctionStartedConfig = transformer.TransformerConfig{
 }
 
 var _ = Describe("AuctionStarted Transformer", func() {
-	It("fetches and transforms a AuctionStarted event from mainnet chain", func() {
-		blockNumber := int64(8956422)
+	XIt("fetches and transforms a AuctionStarted event from mainnet chain", func() {
+		blockNumber := int64(7382294)
 		config := testAuctionStartedConfig
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -56,12 +53,12 @@ var _ = Describe("AuctionStarted Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &auction_started.AuctionStartedConverter{},
 			Repository: &auction_started.AuctionStartedRepository{},
@@ -83,30 +80,25 @@ var _ = Describe("AuctionStarted Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(dbResult)).To(Equal(1))
 		res := dbResult[0]
-		Expect(res.Hash).To(Equal("0000"))
-		Expect(res.RegistrationDate).To(Equal(""))
+		Expect(res.Hash).To(Equal("0xaa4525db0b580a63479e8242031f79d3781ceba83ff8599cf4ed77c2ff8f103c"))
+		Expect(res.RegistrationDate).To(Equal("1553201115"))
 	})
 
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.RegistarAddress)
-		abi, err := geth.ParseAbi(test_data.RegistarAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &auction_started.AuctionStartedEntity{}
-
+		converter := auction_started.AuctionStartedConverter{}
 		var eventLog = test_data.EthAuctionStartedLog
-
-		err = contract.UnpackLog(entity, "AuctionStarted", eventLog)
+		entities, err := converter.ToEntities(test_data.RegistarAbi, []types.Log{eventLog})
 		Expect(err).NotTo(HaveOccurred())
-
+		Expect(len(entities)).To(Equal(1))
+		entity, ok := entities[0].(auction_started.AuctionStartedEntity)
+		Expect(ok).To(Equal(true))
 		expectedEntity := test_data.AuctionStartedEntity
 		Expect(entity.Hash).To(Equal(expectedEntity.Hash))
 		Expect(entity.RegistrationDate).To(Equal(expectedEntity.RegistrationDate))
 	})
 
-	It("rechecks header for auction_started event", func() {
-		blockNumber := int64(8956422)
+	XIt("rechecks header for auction_started event", func() {
+		blockNumber := int64(7382294)
 		config := testAuctionStartedConfig
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -117,12 +109,12 @@ var _ = Describe("AuctionStarted Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &auction_started.AuctionStartedConverter{},
 			Repository: &auction_started.AuctionStartedRepository{},
@@ -151,23 +143,5 @@ var _ = Describe("AuctionStarted Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(auction_startedChecked[0]).To(Equal(2))
-	})
-
-	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.RegistarAddress)
-		abi, err := geth.ParseAbi(test_data.RegistarAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &auction_started.AuctionStartedEntity{}
-
-		var eventLog = test_data.EthAuctionStartedLog
-
-		err = contract.UnpackLog(entity, "AuctionStarted", eventLog)
-		Expect(err).NotTo(HaveOccurred())
-
-		expectedEntity := test_data.AuctionStartedEntity
-		Expect(entity.Hash).To(Equal(expectedEntity.Hash))
-		Expect(entity.RegistrationDate).To(Equal(expectedEntity.RegistrationDate))
 	})
 })

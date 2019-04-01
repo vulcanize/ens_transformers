@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,14 +18,16 @@ package watcher
 
 import (
 	"fmt"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transactions"
 
 	"github.com/ethereum/go-ethereum/common"
-	log "github.com/sirupsen/logrus"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/sirupsen/logrus"
 
-	chunk "github.com/vulcanize/vulcanizedb/libraries/shared/chunker"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/chunker"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	repo "github.com/vulcanize/vulcanizedb/libraries/shared/repository"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/repository"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
@@ -33,29 +35,34 @@ import (
 
 type EventWatcher struct {
 	Transformers  []transformer.EventTransformer
+	BlockChain    core.BlockChain
 	DB            *postgres.DB
-	Fetcher       fetch.LogFetcher
-	Chunker       chunk.Chunker
+	Fetcher       fetcher.LogFetcher
+	Chunker       chunker.Chunker
 	Addresses     []common.Address
 	Topics        []common.Hash
 	StartingBlock *int64
+	Syncer        transactions.ITransactionsSyncer
 }
 
 func NewEventWatcher(db *postgres.DB, bc core.BlockChain) EventWatcher {
-	chunker := chunk.NewLogChunker()
-	fetcher := fetch.NewFetcher(bc)
+	logChunker := chunker.NewLogChunker()
+	logFetcher := fetcher.NewFetcher(bc)
+	transactionSyncer := transactions.NewTransactionsSyncer(db, bc)
 	return EventWatcher{
-		DB:      db,
-		Fetcher: fetcher,
-		Chunker: chunker,
+		BlockChain: bc,
+		DB:         db,
+		Fetcher:    logFetcher,
+		Chunker:    logChunker,
+		Syncer:     transactionSyncer,
 	}
 }
 
 // Adds transformers to the watcher and updates the chunker, so that it will consider the new transformers.
-func (watcher *EventWatcher) AddTransformers(initializers []transformer.TransformerInitializer) {
+func (watcher *EventWatcher) AddTransformers(initializers []transformer.EventTransformerInitializer) {
 	var contractAddresses []common.Address
 	var topic0s []common.Hash
-	var configs []transformer.TransformerConfig
+	var configs []transformer.EventTransformerConfig
 
 	for _, initializer := range initializers {
 		t := initializer(watcher.DB)
@@ -85,15 +92,15 @@ func (watcher *EventWatcher) Execute(recheckHeaders constants.TransformerExecuti
 		return fmt.Errorf("No transformers added to watcher")
 	}
 
-	checkedColumnNames, err := repo.GetCheckedColumnNames(watcher.DB)
+	checkedColumnNames, err := repository.GetCheckedColumnNames(watcher.DB)
 	if err != nil {
 		return err
 	}
-	notCheckedSQL := repo.CreateNotCheckedSQL(checkedColumnNames, recheckHeaders)
+	notCheckedSQL := repository.CreateNotCheckedSQL(checkedColumnNames, recheckHeaders)
 
-	missingHeaders, err := repo.MissingHeaders(*watcher.StartingBlock, -1, watcher.DB, notCheckedSQL)
+	missingHeaders, err := repository.MissingHeaders(*watcher.StartingBlock, -1, watcher.DB, notCheckedSQL)
 	if err != nil {
-		log.Error("Fetching of missing headers failed in watcher!")
+		logrus.Error("Fetching of missing headers failed in watcher!")
 		return err
 	}
 
@@ -101,26 +108,39 @@ func (watcher *EventWatcher) Execute(recheckHeaders constants.TransformerExecuti
 		// TODO Extend FetchLogs for doing several blocks at a time
 		logs, err := watcher.Fetcher.FetchLogs(watcher.Addresses, watcher.Topics, header)
 		if err != nil {
-			// TODO Handle fetch error in watcher
-			log.Errorf("Error while fetching logs for header %v in watcher", header.Id)
+			logrus.Errorf("Error while fetching logs for header %v in watcher", header.Id)
 			return err
 		}
 
-		chunkedLogs := watcher.Chunker.ChunkLogs(logs)
+		transactionsSyncErr := watcher.Syncer.SyncTransactions(header.Id, logs)
+		if transactionsSyncErr != nil {
+			logrus.Errorf("error syncing transactions: %s", transactionsSyncErr.Error())
+			return transactionsSyncErr
+		}
 
-		// Can't quit early and mark as checked if there are no logs. If we are running continuousLogSync,
-		// not all logs we're interested in might have been fetched.
-		for _, t := range watcher.Transformers {
-			transformerName := t.GetConfig().TransformerName
-			logChunk := chunkedLogs[transformerName]
-			err = t.Execute(logChunk, header, constants.HeaderMissing)
-			if err != nil {
-				log.Errorf("%v transformer failed to execute in watcher: %v", transformerName, err)
-				return err
-			}
+		transformErr := watcher.transformLogs(logs, header)
+		if transformErr != nil {
+			return transformErr
 		}
 	}
 	return err
+}
+
+func (watcher *EventWatcher) transformLogs(logs []types.Log, header core.Header) error {
+	chunkedLogs := watcher.Chunker.ChunkLogs(logs)
+
+	// Can't quit early and mark as checked if there are no logs. If we are running continuousLogSync,
+	// not all logs we're interested in might have been fetched.
+	for _, t := range watcher.Transformers {
+		transformerName := t.GetConfig().TransformerName
+		logChunk := chunkedLogs[transformerName]
+		err := t.Execute(logChunk, header, constants.HeaderMissing)
+		if err != nil {
+			logrus.Errorf("%v transformer failed to execute in watcher: %v", transformerName, err)
+			return err
+		}
+	}
+	return nil
 }
 
 func earlierStartingBlockNumber(transformerBlock, watcherBlock int64) bool {

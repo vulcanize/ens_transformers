@@ -19,8 +19,8 @@ package shared_behaviors
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -43,17 +43,17 @@ type CreateBehaviorInputs struct {
 	TestModel                interface{}
 	RecheckTestModel         interface{}
 	ModelWithDifferentLogIdx interface{}
-	Repository               factories.Repository
+	Repository               event.Repository
 }
 
 type MarkedHeaderCheckedBehaviorInputs struct {
 	CheckedHeaderColumnName string
-	Repository              factories.Repository
+	Repository              event.Repository
 }
 
 type MissingHeadersBehaviorInputs struct {
-	Repository    factories.Repository
-	RepositoryTwo factories.Repository
+	Repository    event.Repository
+	RepositoryTwo event.Repository
 }
 
 func SharedRepositoryCreateBehaviors(inputs *CreateBehaviorInputs) {

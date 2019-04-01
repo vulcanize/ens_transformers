@@ -1,13 +1,13 @@
 package integration_tests
 
 import (
+	"github.com/vulcanize/ens_transformers/test_config"
 	"io/ioutil"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
 func TestIntegrationTests(t *testing.T) {
@@ -16,13 +16,7 @@ func TestIntegrationTests(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	testConfig := viper.New()
-	testConfig.SetConfigName("staging")
-	testConfig.AddConfigPath("$GOPATH/src/github.com/vulcanize/ens_transformers/environments/")
-	err := testConfig.ReadInConfig()
-	ipc = testConfig.GetString("client.ipcPath")
-	if err != nil {
-		log.Fatal(err)
-	}
+	testConfig := test_config.InfuraClient
+	ipc = testConfig.IPCPath
 	log.SetOutput(ioutil.Discard)
 })

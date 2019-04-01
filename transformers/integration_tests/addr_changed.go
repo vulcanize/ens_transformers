@@ -17,24 +17,21 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
-
 	"github.com/vulcanize/ens_transformers/test_config"
 	"github.com/vulcanize/ens_transformers/transformers/resolver/addr_changed"
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 	"github.com/vulcanize/ens_transformers/transformers/test_data"
+	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var testAddrChangedConfig = transformer.TransformerConfig{
+var testAddrChangedConfig = transformer.EventTransformerConfig{
 	TransformerName:     constants.AddrChangedLabel,
 	ContractAddresses:   []string{test_data.ResolverAddress},
 	ContractAbi:         test_data.CompleteResolverAbi,
@@ -45,7 +42,7 @@ var testAddrChangedConfig = transformer.TransformerConfig{
 
 var _ = Describe("AddrChanged Transformer", func() {
 	It("fetches and transforms a AddrChanged event from mainnet chain", func() {
-		blockNumber := int64(8956422)
+		blockNumber := int64(7347406)
 		config := testAddrChangedConfig
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -56,12 +53,12 @@ var _ = Describe("AddrChanged Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &addr_changed.AddrChangedConverter{},
 			Repository: &addr_changed.AddrChangedRepository{},
@@ -83,24 +80,19 @@ var _ = Describe("AddrChanged Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(dbResult)).To(Equal(1))
 		res := dbResult[0]
-		Expect(res.Node).To(Equal("0000"))
-		Expect(res.Address).To(Equal(""))
-		Expect(res.Resolver).To(Equal(""))
+		Expect(res.Node).To(Equal("0x5959d9e59dbcefc34e5c15b3e39af59c29b4aaaea04b56b3ac7dd3f6b0f95a4a"))
+		Expect(res.Address).To(Equal("0x91de6EF9B3998609aE0B44F4c1ea51A8E3a1c208"))
+		Expect(res.Resolver).To(Equal("0x1da022710dF5002339274AaDEe8D58218e9D6AB5"))
 	})
 
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.ResolverAddress)
-		abi, err := geth.ParseAbi(test_data.CompleteResolverAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &addr_changed.AddrChangedEntity{}
-
+		converter := addr_changed.AddrChangedConverter{}
 		var eventLog = test_data.EthAddrChangedLog
-
-		err = contract.UnpackLog(entity, "AddrChanged", eventLog)
+		entities, err := converter.ToEntities(test_data.CompleteResolverAbi, []types.Log{eventLog})
 		Expect(err).NotTo(HaveOccurred())
-
+		Expect(len(entities)).To(Equal(1))
+		entity, ok := entities[0].(addr_changed.AddrChangedEntity)
+		Expect(ok).To(Equal(true))
 		expectedEntity := test_data.AddrChangedEntity
 		Expect(entity.Node).To(Equal(expectedEntity.Node))
 		Expect(entity.Resolver).To(Equal(expectedEntity.Resolver))
@@ -108,7 +100,7 @@ var _ = Describe("AddrChanged Transformer", func() {
 	})
 
 	It("rechecks header for addr_changed event", func() {
-		blockNumber := int64(8956422)
+		blockNumber := int64(7347406)
 		config := testAddrChangedConfig
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -119,12 +111,12 @@ var _ = Describe("AddrChanged Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &addr_changed.AddrChangedConverter{},
 			Repository: &addr_changed.AddrChangedRepository{},
@@ -153,24 +145,5 @@ var _ = Describe("AddrChanged Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(addr_changedChecked[0]).To(Equal(2))
-	})
-
-	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.ResolverAddress)
-		abi, err := geth.ParseAbi(test_data.CompleteResolverAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &addr_changed.AddrChangedEntity{}
-
-		var eventLog = test_data.EthAddrChangedLog
-
-		err = contract.UnpackLog(entity, "AddrChanged", eventLog)
-		Expect(err).NotTo(HaveOccurred())
-
-		expectedEntity := test_data.AddrChangedEntity
-		Expect(entity.Node).To(Equal(expectedEntity.Node))
-		Expect(entity.Resolver).To(Equal(expectedEntity.Resolver))
-		Expect(entity.A).To(Equal(expectedEntity.A))
 	})
 })

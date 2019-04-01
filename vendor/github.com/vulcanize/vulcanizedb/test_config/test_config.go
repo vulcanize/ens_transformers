@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,6 +17,7 @@
 package test_config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -48,10 +49,10 @@ func setTestConfig() {
 	TestConfig.SetConfigName("private")
 	TestConfig.AddConfigPath("$GOPATH/src/github.com/vulcanize/vulcanizedb/environments/")
 	err := TestConfig.ReadInConfig()
-	ipc := TestConfig.GetString("client.ipcPath")
 	if err != nil {
 		log.Fatal(err)
 	}
+	ipc := TestConfig.GetString("client.ipcPath")
 	hn := TestConfig.GetString("database.hostname")
 	port := TestConfig.GetInt("database.port")
 	name := TestConfig.GetString("database.name")
@@ -71,10 +72,20 @@ func setInfuraConfig() {
 	Infura.SetConfigName("infura")
 	Infura.AddConfigPath("$GOPATH/src/github.com/vulcanize/vulcanizedb/environments/")
 	err := Infura.ReadInConfig()
-	ipc := Infura.GetString("client.ipcpath")
 	if err != nil {
 		log.Fatal(err)
 	}
+	ipc := Infura.GetString("client.ipcpath")
+
+	// If we don't have an ipc path in the config file, check the env variable
+	if ipc == "" {
+		Infura.BindEnv("url", "INFURA_URL")
+		ipc = Infura.GetString("url")
+	}
+	if ipc == "" {
+		log.Fatal(errors.New("infura.toml IPC path or $INFURA_URL env variable need to be set"))
+	}
+
 	InfuraClient = config.Client{
 		IPCPath: ipc,
 	}
@@ -95,12 +106,16 @@ func NewTestDB(node core.Node) *postgres.DB {
 
 func CleanTestDB(db *postgres.DB) {
 	db.MustExec("DELETE FROM blocks")
-	db.MustExec("DELETE FROM headers")
 	db.MustExec("DELETE FROM checked_headers")
+	// can't delete from eth_nodes since this function is called after the required eth_node is persisted
+	db.MustExec("DELETE FROM full_sync_transactions")
+	db.MustExec("DELETE FROM goose_db_version")
+	db.MustExec("DELETE FROM headers")
+	db.MustExec("DELETE FROM light_sync_transactions")
 	db.MustExec("DELETE FROM log_filters")
 	db.MustExec("DELETE FROM logs")
+	db.MustExec("DELETE FROM queued_storage")
 	db.MustExec("DELETE FROM receipts")
-	db.MustExec("DELETE FROM transactions")
 	db.MustExec("DELETE FROM watched_contracts")
 }
 

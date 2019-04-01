@@ -22,8 +22,8 @@ import (
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 )
 
-func GetNewBidConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
+func GetNewBidConfig() shared_t.EventTransformerConfig {
+	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.NewBidLabel,
 		ContractAddresses:   []string{constants.RegistarContractAddress()},
 		ContractAbi:         constants.RegistarABI(),

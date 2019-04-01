@@ -17,24 +17,21 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
-
 	"github.com/vulcanize/ens_transformers/test_config"
 	"github.com/vulcanize/ens_transformers/transformers/registar/hash_invalidated"
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 	"github.com/vulcanize/ens_transformers/transformers/test_data"
+	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var testHashInvalidatedConfig = transformer.TransformerConfig{
+var testHashInvalidatedConfig = transformer.EventTransformerConfig{
 	TransformerName:     constants.HashInvalidatedLabel,
 	ContractAddresses:   []string{test_data.RegistarAddress},
 	ContractAbi:         test_data.RegistarAbi,
@@ -44,7 +41,7 @@ var testHashInvalidatedConfig = transformer.TransformerConfig{
 }
 
 var _ = Describe("HashInvalidated Transformer", func() {
-	It("fetches and transforms a HashInvalidated event from mainnet chain", func() {
+	XIt("fetches and transforms a HashInvalidated event from mainnet chain", func() {
 		blockNumber := int64(8956422)
 		config := testHashInvalidatedConfig
 		config.StartingBlockNumber = blockNumber
@@ -56,12 +53,12 @@ var _ = Describe("HashInvalidated Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &hash_invalidated.HashInvalidatedConverter{},
 			Repository: &hash_invalidated.HashInvalidatedRepository{},
@@ -90,26 +87,20 @@ var _ = Describe("HashInvalidated Transformer", func() {
 	})
 
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.RegistarAddress)
-		abi, err := geth.ParseAbi(test_data.RegistarAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &hash_invalidated.HashInvalidatedEntity{}
-
+		converter := hash_invalidated.HashInvalidatedConverter{}
 		var eventLog = test_data.EthHashInvalidatedLog
-
-		err = contract.UnpackLog(entity, "HashInvalidated", eventLog)
+		entities, err := converter.ToEntities(test_data.RegistarAbi, []types.Log{eventLog})
 		Expect(err).NotTo(HaveOccurred())
-
+		Expect(len(entities)).To(Equal(1))
+		entity, ok := entities[0].(hash_invalidated.HashInvalidatedEntity)
+		Expect(ok).To(Equal(true))
 		expectedEntity := test_data.HashInvalidatedEntity
 		Expect(entity.Hash).To(Equal(expectedEntity.Hash))
 		Expect(entity.Name).To(Equal(expectedEntity.Name))
 		Expect(entity.Value).To(Equal(expectedEntity.Value))
-		Expect(entity.RegistrationDate).To(Equal(expectedEntity.RegistrationDate))
 	})
 
-	It("rechecks header for hash_invalidated event", func() {
+	XIt("rechecks header for hash_invalidated event", func() {
 		blockNumber := int64(8956422)
 		config := testHashInvalidatedConfig
 		config.StartingBlockNumber = blockNumber
@@ -121,12 +112,12 @@ var _ = Describe("HashInvalidated Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &hash_invalidated.HashInvalidatedConverter{},
 			Repository: &hash_invalidated.HashInvalidatedRepository{},
@@ -155,25 +146,5 @@ var _ = Describe("HashInvalidated Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(hash_invalidatedChecked[0]).To(Equal(2))
-	})
-
-	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.RegistarAddress)
-		abi, err := geth.ParseAbi(test_data.RegistarAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &hash_invalidated.HashInvalidatedEntity{}
-
-		var eventLog = test_data.EthHashInvalidatedLog
-
-		err = contract.UnpackLog(entity, "HashInvalidated", eventLog)
-		Expect(err).NotTo(HaveOccurred())
-
-		expectedEntity := test_data.HashInvalidatedEntity
-		Expect(entity.Hash).To(Equal(expectedEntity.Hash))
-		Expect(entity.Name).To(Equal(expectedEntity.Name))
-		Expect(entity.Value).To(Equal(expectedEntity.Value))
-		Expect(entity.RegistrationDate).To(Equal(expectedEntity.RegistrationDate))
 	})
 })

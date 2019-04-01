@@ -34,7 +34,7 @@ import (
 var _ = Describe("NewOwner repository", func() {
 	var (
 		newOwnerRepository new_owner.NewOwnerRepository
-		db                        *postgres.DB
+		db                 *postgres.DB
 	)
 
 	BeforeEach(func() {

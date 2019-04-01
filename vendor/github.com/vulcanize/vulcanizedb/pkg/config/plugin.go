@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -37,17 +37,17 @@ type Transformer struct {
 	Path           string
 	Type           TransformerType
 	MigrationPath  string
-	MigrationRank  int
+	MigrationRank  uint64
 	RepositoryPath string
 }
 
-func (c *Plugin) GetPluginPaths() (string, string, error) {
-	path, err := helpers.CleanPath(c.FilePath)
+func (pluginConfig *Plugin) GetPluginPaths() (string, string, error) {
+	path, err := helpers.CleanPath(pluginConfig.FilePath)
 	if err != nil {
 		return "", "", err
 	}
 
-	name := strings.Split(c.FileName, ".")[0]
+	name := strings.Split(pluginConfig.FileName, ".")[0]
 	goFile := filepath.Join(path, name+".go")
 	soFile := filepath.Join(path, name+".so")
 
@@ -55,12 +55,13 @@ func (c *Plugin) GetPluginPaths() (string, string, error) {
 }
 
 // Removes duplicate migration paths and returns them in ranked order
-func (c *Plugin) GetMigrationsPaths() ([]string, error) {
-	paths := make(map[int]string)
-	for name, transformer := range c.Transformers {
+func (pluginConfig *Plugin) GetMigrationsPaths() ([]string, error) {
+	paths := make(map[uint64]string)
+	highestRank := -1
+	for name, transformer := range pluginConfig.Transformers {
 		repo := transformer.RepositoryPath
 		mig := transformer.MigrationPath
-		path := filepath.Join("$GOPATH/src", c.Home, "vendor", repo, mig)
+		path := filepath.Join("$GOPATH/src", pluginConfig.Home, "vendor", repo, mig)
 		cleanPath, err := helpers.CleanPath(path)
 		if err != nil {
 			return nil, err
@@ -74,6 +75,16 @@ func (c *Plugin) GetMigrationsPaths() ([]string, error) {
 			}
 		}
 		paths[transformer.MigrationRank] = cleanPath
+		if int(transformer.MigrationRank) >= highestRank {
+			highestRank = int(transformer.MigrationRank)
+		}
+	}
+	// Check for gaps and duplicates
+	if len(paths) != (highestRank + 1) {
+		return []string{}, errors.New("number of distinct ranks does not match number of distinct migration paths")
+	}
+	if anyDupes(paths) {
+		return []string{}, errors.New("duplicate paths with different ranks present")
 	}
 
 	sortedPaths := make([]string, len(paths))
@@ -85,9 +96,9 @@ func (c *Plugin) GetMigrationsPaths() ([]string, error) {
 }
 
 // Removes duplicate repo paths before returning them
-func (c *Plugin) GetRepoPaths() map[string]bool {
+func (pluginConfig *Plugin) GetRepoPaths() map[string]bool {
 	paths := make(map[string]bool)
-	for _, transformer := range c.Transformers {
+	for _, transformer := range pluginConfig.Transformers {
 		paths[transformer.RepositoryPath] = true
 	}
 
@@ -100,26 +111,29 @@ const (
 	UnknownTransformerType TransformerType = iota
 	EthEvent
 	EthStorage
+	EthContract
 )
 
-func (pt TransformerType) String() string {
+func (transformerType TransformerType) String() string {
 	names := [...]string{
 		"Unknown",
 		"eth_event",
 		"eth_storage",
+		"eth_contract",
 	}
 
-	if pt > EthStorage || pt < EthEvent {
+	if transformerType > EthContract || transformerType < EthEvent {
 		return "Unknown"
 	}
 
-	return names[pt]
+	return names[transformerType]
 }
 
 func GetTransformerType(str string) TransformerType {
 	types := [...]TransformerType{
 		EthEvent,
 		EthStorage,
+		EthContract,
 	}
 
 	for _, ty := range types {
@@ -129,4 +143,25 @@ func GetTransformerType(str string) TransformerType {
 	}
 
 	return UnknownTransformerType
+}
+
+func anyDupes(list map[uint64]string) bool {
+	seen := make([]string, 0, len(list))
+	for _, str := range list {
+		dupe := inList(str, seen)
+		if dupe {
+			return true
+		}
+		seen = append(seen, str)
+	}
+	return false
+}
+
+func inList(str string, list []string) bool {
+	for _, element := range list {
+		if str == element {
+			return true
+		}
+	}
+	return false
 }

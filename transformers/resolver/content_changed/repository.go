@@ -37,7 +37,7 @@ func (repository *ContentChangedRepository) SetDB(db *postgres.DB) {
 }
 
 func (repository ContentChangedRepository) Create(headerID int64, models []interface{}) error {
-	tx, dBaseErr := repository.db.Begin()
+	tx, dBaseErr := repository.db.Beginx()
 	if dBaseErr != nil {
 		return dBaseErr
 	}

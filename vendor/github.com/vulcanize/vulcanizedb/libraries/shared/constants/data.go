@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,6 +17,3 @@
 package constants
 
 var DataItemLength = 32
-
-// TODO Grab this from DB, since it can change through governance
-var TTL = int64(10800) // 60 * 60 * 3 == 10800 seconds == 3 hours

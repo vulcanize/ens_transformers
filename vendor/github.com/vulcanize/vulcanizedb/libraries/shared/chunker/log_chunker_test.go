@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -28,29 +28,29 @@ import (
 
 var _ = Describe("Log chunker", func() {
 	var (
-		configs []shared_t.TransformerConfig
+		configs []shared_t.EventTransformerConfig
 		chunker *chunk.LogChunker
 	)
 
 	BeforeEach(func() {
-		configA := shared_t.TransformerConfig{
+		configA := shared_t.EventTransformerConfig{
 			TransformerName:   "TransformerA",
 			ContractAddresses: []string{"0x00000000000000000000000000000000000000A1", "0x00000000000000000000000000000000000000A2"},
 			Topic:             "0xA",
 		}
-		configB := shared_t.TransformerConfig{
+		configB := shared_t.EventTransformerConfig{
 			TransformerName:   "TransformerB",
 			ContractAddresses: []string{"0x00000000000000000000000000000000000000B1"},
 			Topic:             "0xB",
 		}
 
-		configC := shared_t.TransformerConfig{
+		configC := shared_t.EventTransformerConfig{
 			TransformerName:   "TransformerC",
 			ContractAddresses: []string{"0x00000000000000000000000000000000000000A2"},
 			Topic:             "0xC",
 		}
 
-		configs = []shared_t.TransformerConfig{configA, configB, configC}
+		configs = []shared_t.EventTransformerConfig{configA, configB, configC}
 		chunker = chunk.NewLogChunker()
 		chunker.AddConfigs(configs)
 	})
@@ -58,9 +58,9 @@ var _ = Describe("Log chunker", func() {
 	Describe("initialisation", func() {
 		It("creates lookup maps correctly", func() {
 			Expect(chunker.AddressToNames).To(Equal(map[string][]string{
-				"0x00000000000000000000000000000000000000a1": []string{"TransformerA"},
-				"0x00000000000000000000000000000000000000a2": []string{"TransformerA", "TransformerC"},
-				"0x00000000000000000000000000000000000000b1": []string{"TransformerB"},
+				"0x00000000000000000000000000000000000000a1": {"TransformerA"},
+				"0x00000000000000000000000000000000000000a2": {"TransformerA", "TransformerC"},
+				"0x00000000000000000000000000000000000000b1": {"TransformerB"},
 			}))
 
 			Expect(chunker.NameToTopic0).To(Equal(map[string]common.Hash{
@@ -73,24 +73,24 @@ var _ = Describe("Log chunker", func() {
 
 	Describe("AddConfigs", func() {
 		It("can add more configs later", func() {
-			configD := shared_t.TransformerConfig{
+			configD := shared_t.EventTransformerConfig{
 				TransformerName:   "TransformerD",
 				ContractAddresses: []string{"0x000000000000000000000000000000000000000D"},
 				Topic:             "0xD",
 			}
-			chunker.AddConfigs([]shared_t.TransformerConfig{configD})
+			chunker.AddConfigs([]shared_t.EventTransformerConfig{configD})
 
 			Expect(chunker.AddressToNames).To(ContainElement([]string{"TransformerD"}))
 			Expect(chunker.NameToTopic0).To(ContainElement(common.HexToHash("0xD")))
 		})
 
 		It("lower cases address", func() {
-			configD := shared_t.TransformerConfig{
+			configD := shared_t.EventTransformerConfig{
 				TransformerName:   "TransformerD",
 				ContractAddresses: []string{"0x000000000000000000000000000000000000000D"},
 				Topic:             "0xD",
 			}
-			chunker.AddConfigs([]shared_t.TransformerConfig{configD})
+			chunker.AddConfigs([]shared_t.EventTransformerConfig{configD})
 
 			Expect(chunker.AddressToNames["0x000000000000000000000000000000000000000d"]).To(Equal([]string{"TransformerD"}))
 		})

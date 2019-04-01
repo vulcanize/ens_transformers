@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -39,7 +39,7 @@ var GenericTestLogs = []types.Log{{
 	BlockNumber: uint64(startingBlockNumber),
 }}
 
-var GenericTestConfig = transformer.TransformerConfig{
+var GenericTestConfig = transformer.EventTransformerConfig{
 	TransformerName:     "generic-test-transformer",
 	ContractAddresses:   []string{address},
 	ContractAbi:         randomString(100),
@@ -49,7 +49,7 @@ var GenericTestConfig = transformer.TransformerConfig{
 }
 
 func randomString(length int) string {
-	var seededRand *rand.Rand = rand.New(
+	var seededRand = rand.New(
 		rand.NewSource(time.Now().UnixNano()))
 	charset := "abcdefghijklmnopqrstuvwxyz1234567890"
 	b := make([]byte, length)

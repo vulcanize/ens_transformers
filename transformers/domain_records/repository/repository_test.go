@@ -39,7 +39,7 @@ var _ = Describe("Repository", func() {
 	}
 
 	BeforeEach(func() {
-		db, _ = test_helpers.SetupENSRepo(3327417, -1)
+		db, _ = test_helpers.SetupENSRepo(3327417)
 		repo = repository.NewENSRepository(db)
 	})
 

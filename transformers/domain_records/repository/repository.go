@@ -51,7 +51,7 @@ func (r *ensRepository) RecordExists(node string) (bool, error) {
 	var exists bool
 	err := r.db.Get(&exists,
 		`SELECT EXISTS(SELECT 1 
-				FROM public.domain_records
+				FROM ens.domain_records
 				WHERE name_hash = $1
 				LIMIT 1)`,
 		node)
@@ -61,7 +61,7 @@ func (r *ensRepository) RecordExists(node string) (bool, error) {
 
 func (r *ensRepository) CreateRecord(record models.DomainModel) error {
 	_, err := r.db.Exec(
-		`INSERT INTO public.domain_records
+		`INSERT INTO ens.domain_records
 			    (block_number, 
 			    name_hash, 
 				label_hash, 
@@ -158,7 +158,7 @@ func (r *ensRepository) GetRecord(node string, blockNumber int64) (*models.Domai
 				indexed_text_key,
 				multihash,
 				contenthash
-		 FROM public.domain_records
+		 FROM ens.domain_records
 		 WHERE name_hash = $1
 		 AND block_number <= $2 
 		 ORDER BY block_number DESC LIMIT 1`,

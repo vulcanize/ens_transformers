@@ -21,25 +21,32 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
+
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
+	"github.com/vulcanize/vulcanizedb/pkg/config"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/light/converter"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/light/fetcher"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/light/repository"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/light/retriever"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/contract"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/getter"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/parser"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/types"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/light/converter"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/light/fetcher"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/light/repository"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/light/retriever"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/shared/constants"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/shared/contract"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/shared/getter"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/shared/parser"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/shared/types"
 
 	"github.com/vulcanize/ens_transformers/transformers/domain_records/models"
 	trep "github.com/vulcanize/ens_transformers/transformers/domain_records/repository"
 	"github.com/vulcanize/ens_transformers/transformers/domain_records/utils"
 )
 
+// This transformer watches a single ENS Registry, using the resolver addresses emitted from NewResolver events
+// it configures and watches every Resolver contract associated with this Registry
+// It compiles data from the Registry and all the Resolver contracts together into a domain_record Postgres table
+
 // Requires a light synced vDB (headers) and a running eth node (or infura)
-type transformer struct {
+type Transformer struct {
 	// Database interfaces
 	trep.ENSRepository          // Repository for ENS domain records
 	repository.HeaderRepository // Interface for interaction with header repositories
@@ -53,9 +60,8 @@ type transformer struct {
 	fetcher.Fetcher     // Fetches event logs, using header hashes
 	converter.Converter // Converts watched event logs into custom log
 
-	// Ethereum network name
-	// Default "" network is mainnet
-	Network string
+	// Config for the registry contract
+	RegistryConfig config.ContractConfig
 
 	// Registry contract
 	Registry             *contract.Contract
@@ -75,63 +81,59 @@ type transformer struct {
 }
 
 // Order-of-operations:
-// 1. Create new transformer
-// 2. Initialize registry contract
-// 3. Execute
+// 1. Configure transformer initializer
+// 2. Create new transformer from it
+// 3. Initialize registry contract
+// 4. Execute
 
+// Be sure the transformer has been configured with a config struct before running this method
 // Transformer takes in config for blockchain, database, and network id
-func NewTransformer(network string, bc core.BlockChain, db *postgres.DB) (*transformer, error) {
-	if network != "" && network != "ropsten" {
-		return nil, errors.New(`invalid network id; only mainnet ("") and ropsten ("ropsten") are allowed`)
-	}
+func (tr Transformer) NewTransformer(db *postgres.DB, bc core.BlockChain) transformer.ContractTransformer {
+	tr.Fetcher = fetcher.NewFetcher(bc)
+	tr.Parser = parser.NewParser(tr.RegistryConfig.Network)
+	tr.HeaderRepository = repository.NewHeaderRepository(db)
+	tr.Converter = converter.Converter{}
+	tr.Resolvers = map[string]*contract.Contract{}
+	tr.ENSRepository = trep.NewENSRepository(db)
+	tr.InterfaceGetter = getter.NewInterfaceGetter(bc)
+	tr.BlockRetriever = retriever.NewBlockRetriever(db)
 
-	return &transformer{
-		Network:          network,
-		Fetcher:          fetcher.NewFetcher(bc),
-		Parser:           parser.NewParser(network),
-		HeaderRepository: repository.NewHeaderRepository(db),
-		Converter:        converter.NewConverter(&contract.Contract{}),
-		Resolvers:        map[string]*contract.Contract{},
-		ENSRepository:    trep.NewENSRepository(db),
-		InterfaceGetter:  getter.NewInterfaceGetter(bc),
-		BlockRetriever:   retriever.NewBlockRetriever(db),
-	}, nil
+	return &tr
 }
 
 // Initializes transformer with the registry contract info
-func (tr *transformer) Init() error {
+func (tr *Transformer) Init() error {
 	// Get registry abi (mainnet and ropsten contracts have same abi)
 	err := tr.Parser.Parse(constants.EnsContractAddress)
 	if err != nil {
 		return err
 	}
 
-	var addr string
-	var start int64
-	if tr.Network == "ropsten" {
-		addr = "0x112234455C3a32FD11230C42E7Bccd4A84e02010"
-		start = 25409
-	} else {
-		addr = constants.EnsContractAddress
-		start = 3327417
-		tr.Network = "mainnet"
+	var address string
+	if len(tr.RegistryConfig.Addresses) != 1 {
+		return errors.New("transformer configured with incorrect number of registry addresses")
+	}
+	for addr := range tr.RegistryConfig.Addresses {
+		address = addr
+	}
+	err = tr.Parser.ParseAbiStr(tr.RegistryConfig.Abis[address])
+	if err != nil {
+		return err
 	}
 
 	// Aggregate info into registry contract object and store for execution
-	tr.Registry = &contract.Contract{
+	tr.Registry = contract.Contract{
 		Name:          "ENS-Registry",
-		Network:       tr.Network,
-		Address:       addr,
+		Network:       tr.RegistryConfig.Network,
+		Address:       address,
 		Abi:           tr.Parser.Abi(),
 		ParsedAbi:     tr.Parser.ParsedAbi(),
-		StartingBlock: start,
-		LastBlock:     -1,
+		StartingBlock: tr.RegistryConfig.StartingBlocks[address],
 		Events:        tr.Parser.GetEvents([]string{}), // Watch all events (NewOwner, Transfer, NewTTL, and NewResolver)
 		Methods:       nil,
 		FilterArgs:    map[string]bool{},
 		MethodArgs:    map[string]bool{},
-	}
-
+	}.Init()
 	tr.registryIndex = tr.Registry.StartingBlock
 	tr.registryEventIds = make([]string, 0, 4)
 	tr.registryEventFilters = make([]common.Hash, 0, 4)
@@ -140,7 +142,7 @@ func (tr *transformer) Init() error {
 
 	for _, e := range tr.Registry.Events {
 		// Generate eventID and use it to create a checked_header column if one does not already exist
-		eventId := strings.ToLower(e.Name + "_" + addr)
+		eventId := strings.ToLower(e.Name + "_" + address)
 		err := tr.HeaderRepository.AddCheckColumn(eventId)
 		if err != nil {
 			return err
@@ -155,13 +157,12 @@ func (tr *transformer) Init() error {
 	tr.resolverEventFilters = make(map[string][]common.Hash)
 	tr.invalidResolvers = make(map[string]bool)
 	tr.invalidResolvers["0x0000000000000000000000000000000000000000"] = true
-
 	return nil
 }
 
 // Executes over registry contract
 // Also finds new resolver contracts emitted from NewResolver events and executes over them
-func (tr *transformer) Execute() error {
+func (tr *Transformer) Execute() error {
 	// Configure converter with the registry contract
 	tr.Converter.Update(tr.Registry)
 
@@ -170,7 +171,6 @@ func (tr *transformer) Execute() error {
 	if err != nil {
 		return err
 	}
-
 	// Iterate over headers
 	for _, header := range missingHeaders {
 		// And collect registry event logs
@@ -212,22 +212,22 @@ func (tr *transformer) Execute() error {
 			return err
 		}
 	}
-
-	tr.resolverIndex = tr.registryIndex
-	tr.registryIndex = missingHeaders[len(missingHeaders)-1].BlockNumber + 1
+	if len(missingHeaders) > 0 {
+		tr.resolverIndex = tr.registryIndex
+		tr.registryIndex = missingHeaders[len(missingHeaders)-1].BlockNumber + 1
+	}
 
 	// Watch resolver contracts for the same block range
 	err = tr.watchResolvers()
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
 // Process the log data from Registry events into domain record objects
 // Keeps track of Resolver addresses that are seen emitted so that we can watch them downstream
-func (tr *transformer) processRegistryLogs(logs map[string][]types.Log, blockNumber int64) error {
+func (tr *Transformer) processRegistryLogs(logs map[string][]types.Log, blockNumber int64) error {
 	// Process registry NewOwner logs
 	for _, newOwner := range logs["NewOwner"] {
 		parentHash := newOwner.Values["node"]
@@ -317,7 +317,7 @@ func (tr *transformer) processRegistryLogs(logs map[string][]types.Log, blockNum
 }
 
 // Configures contracts for watching Resolvers we found emitted from the Registry's NewResolver events
-func (tr *transformer) configResolvers(blockNumber int64) error {
+func (tr *Transformer) configResolvers(blockNumber int64) error {
 	for resolverAddr := range tr.ResolverAddresses {
 		_, ok := tr.Resolvers[resolverAddr]
 		if ok { // Resolver contract has either already been setup or we already know it is invalid
@@ -345,12 +345,11 @@ func (tr *transformer) configResolvers(blockNumber int64) error {
 		// Aggregate info into resolver contract object and store for execution
 		tr.Resolvers[resolverAddr] = &contract.Contract{
 			Name:          "ENS-Resolver",
-			Network:       tr.Network,
+			Network:       tr.RegistryConfig.Network,
 			Address:       resolverAddr,
 			Abi:           tr.Parser.Abi(),
 			ParsedAbi:     tr.Parser.ParsedAbi(),
-			StartingBlock: blockNumber, // Start the resolver contract at the blockheight it was first seen emitted by the Registry from a NewResolver event
-			LastBlock:     -1,
+			StartingBlock: blockNumber,                     // Start the resolver contract at the blockheight it was first seen emitted by the Registry from a NewResolver event
 			Events:        tr.Parser.GetEvents([]string{}), // Watch all resolver events
 			Methods:       nil,
 			FilterArgs:    map[string]bool{},
@@ -373,7 +372,7 @@ func (tr *transformer) configResolvers(blockNumber int64) error {
 }
 
 // Watches the configured Resolvers
-func (tr *transformer) watchResolvers() error {
+func (tr *Transformer) watchResolvers() error {
 	// Iterate over resolver contracts
 	for addr, resolver := range tr.Resolvers {
 		// Update converter with this contract
@@ -426,7 +425,7 @@ func (tr *transformer) watchResolvers() error {
 }
 
 // Processes Resolver event log data into our domain records
-func (tr *transformer) processResolverLogs(logs map[string][]types.Log, blockNumber int64) error {
+func (tr *Transformer) processResolverLogs(logs map[string][]types.Log, blockNumber int64) error {
 	// Process resolver AddrChanged logs
 	for _, addrChanged := range logs["AddrChanged"] {
 		// Get most recent state
@@ -566,4 +565,8 @@ func (tr *transformer) processResolverLogs(logs map[string][]types.Log, blockNum
 	}
 
 	return nil
+}
+
+func (tr *Transformer) GetConfig() config.ContractConfig {
+	return tr.RegistryConfig
 }
