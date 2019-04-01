@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/ens_transformers/transformers/registry/new_resolver"
 )
 
-var TransformerInitializer transformer.TransformerInitializer = factories.Transformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     new_resolver.GetNewResolverConfig(),
 	Converter:  new_resolver.NewResolverConverter{},
 	Repository: &new_resolver.NewResolverRepository{},

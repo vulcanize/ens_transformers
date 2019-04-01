@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -72,15 +72,19 @@ func (w *writer) WritePlugin() error {
 	f.Type().Id("exporter").String()
 	f.Var().Id("Exporter").Id("exporter")
 	f.Func().Params(Id("e").Id("exporter")).Id("Export").Params().Parens(List(
-		Index().Qual("github.com/vulcanize/vulcanizedb/libraries/shared/transformer", "TransformerInitializer"),
+		Index().Qual("github.com/vulcanize/vulcanizedb/libraries/shared/transformer", "EventTransformerInitializer"),
 		Index().Qual("github.com/vulcanize/vulcanizedb/libraries/shared/transformer", "StorageTransformerInitializer"),
+		Index().Qual("github.com/vulcanize/vulcanizedb/libraries/shared/transformer", "ContractTransformerInitializer"),
 	)).Block(Return(
 		Index().Qual(
 			"github.com/vulcanize/vulcanizedb/libraries/shared/transformer",
-			"TransformerInitializer").Values(code[config.EthEvent]...),
+			"EventTransformerInitializer").Values(code[config.EthEvent]...),
 		Index().Qual(
 			"github.com/vulcanize/vulcanizedb/libraries/shared/transformer",
-			"StorageTransformerInitializer").Values(code[config.EthStorage]...))) // Exports the collected event and storage transformer initializers
+			"StorageTransformerInitializer").Values(code[config.EthStorage]...),
+		Index().Qual(
+			"github.com/vulcanize/vulcanizedb/libraries/shared/transformer",
+			"ContractTransformerInitializer").Values(code[config.EthContract]...))) // Exports the collected event and storage transformer initializers
 
 	// Write code to destination file
 	err = f.Save(goFile)
@@ -97,9 +101,11 @@ func (w *writer) collectTransformers() (map[config.TransformerType][]Code, error
 		path := transformer.RepositoryPath + "/" + transformer.Path
 		switch transformer.Type {
 		case config.EthEvent:
-			code[config.EthEvent] = append(code[config.EthEvent], Qual(path, "TransformerInitializer"))
+			code[config.EthEvent] = append(code[config.EthEvent], Qual(path, "EventTransformerInitializer"))
 		case config.EthStorage:
 			code[config.EthStorage] = append(code[config.EthStorage], Qual(path, "StorageTransformerInitializer"))
+		case config.EthContract:
+			code[config.EthContract] = append(code[config.EthContract], Qual(path, "ContractTransformerInitializer"))
 		default:
 			return nil, errors.New(fmt.Sprintf("invalid transformer type %s", transformer.Type))
 		}

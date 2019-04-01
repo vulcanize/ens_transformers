@@ -36,7 +36,7 @@ const (
 
 var (
 	textChangedRawJson, _ = json.Marshal(EthTextChangedLog)
-	key = "issuerName"
+	key                   = "issuerName"
 )
 
 var EthTextChangedLog = types.Log{

@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/ens_transformers/transformers/resolver/pubkey_changed"
 )
 
-var TransformerInitializer transformer.TransformerInitializer = factories.Transformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     pubkey_changed.GetPubkeyChangedConfig(),
 	Converter:  pubkey_changed.PubkeyChangedConverter{},
 	Repository: &pubkey_changed.PubkeyChangedRepository{},

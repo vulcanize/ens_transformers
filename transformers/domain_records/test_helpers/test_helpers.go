@@ -20,21 +20,23 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	. "github.com/onsi/gomega"
+	"github.com/vulcanize/ens_transformers/test_config"
 
 	"github.com/vulcanize/vulcanizedb/pkg/config"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/constants"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/contract"
+	"github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/helpers/test_helpers/mocks"
 	"github.com/vulcanize/vulcanizedb/pkg/core"
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres"
 	"github.com/vulcanize/vulcanizedb/pkg/geth"
 	"github.com/vulcanize/vulcanizedb/pkg/geth/client"
 	rpc2 "github.com/vulcanize/vulcanizedb/pkg/geth/converters/rpc"
 	"github.com/vulcanize/vulcanizedb/pkg/geth/node"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/shared/constants"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/shared/contract"
-	"github.com/vulcanize/vulcanizedb/pkg/omni/shared/helpers/test_helpers/mocks"
 )
 
 func SetupDBandBC() (*postgres.DB, core.BlockChain) {
-	infuraIPC := "https://mainnet.infura.io/v3/b09888c1113640cc9ab42750ce750c05"
+	cli := test_config.InfuraClient
+	infuraIPC := cli.IPCPath
 	rawRpcClient, err := rpc.Dial(infuraIPC)
 	Expect(err).NotTo(HaveOccurred())
 	rpcClient := client.NewRpcClient(rawRpcClient, infuraIPC)
@@ -54,7 +56,7 @@ func SetupDBandBC() (*postgres.DB, core.BlockChain) {
 	return db, blockChain
 }
 
-func SetupENSRepo(start, end int64) (*postgres.DB, *contract.Contract) {
+func SetupENSRepo(start int64) (*postgres.DB, *contract.Contract) {
 	db, err := postgres.NewDB(config.Database{
 		Hostname: "localhost",
 		Name:     "vulcanize_private",
@@ -62,13 +64,13 @@ func SetupENSRepo(start, end int64) (*postgres.DB, *contract.Contract) {
 	}, core.Node{})
 	Expect(err).NotTo(HaveOccurred())
 
-	info := SetupENSRegistryContract(start, end)
+	info := SetupENSRegistryContract(start)
 
 	return db, info
 }
 
 func TearDown(db *postgres.DB) {
-	tx, err := db.Begin()
+	tx, err := db.Beginx()
 	Expect(err).NotTo(HaveOccurred())
 
 	_, err = tx.Exec(`DELETE FROM headers`)
@@ -80,14 +82,53 @@ func TearDown(db *postgres.DB) {
 	_, err = tx.Exec(`CREATE TABLE checked_headers (id SERIAL PRIMARY KEY, header_id INTEGER UNIQUE NOT NULL REFERENCES headers (id) ON DELETE CASCADE);`)
 	Expect(err).NotTo(HaveOccurred())
 
-	_, err = tx.Exec(`DELETE FROM domain_records`)
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS auction_started_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS bid_revealed_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS hash_invalidated_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS hash_registered_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS hash_released_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS new_bid_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS new_owner_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS new_resolver_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS new_ttl_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS ens_transfer_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS abi_changed_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS addr_changed_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS content_changed_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS contenthash_changed_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS multihash_changed_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS name_changed_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS pubkey_changed_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS text_changed_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+	_, err = tx.Exec(`ALTER TABLE checked_headers ADD column IF NOT EXISTS name_changed_checked INTEGER NOT NULL DEFAULT 0`)
+	Expect(err).NotTo(HaveOccurred())
+
+	_, err = tx.Exec(`DELETE FROM ens.domain_records`)
 	Expect(err).NotTo(HaveOccurred())
 
 	err = tx.Commit()
 	Expect(err).NotTo(HaveOccurred())
 }
 
-func SetupENSRegistryContract(start, end int64) *contract.Contract {
+func SetupENSRegistryContract(start int64) *contract.Contract {
 	p := mocks.NewParser(constants.ENSAbiString)
 	err := p.Parse()
 	Expect(err).ToNot(HaveOccurred())
@@ -99,7 +140,6 @@ func SetupENSRegistryContract(start, end int64) *contract.Contract {
 		Abi:           p.Abi(),
 		ParsedAbi:     p.ParsedAbi(),
 		StartingBlock: start,
-		LastBlock:     end,
 		Events:        p.GetEvents([]string{}),
 		Methods:       nil,
 		FilterArgs:    map[string]bool{},

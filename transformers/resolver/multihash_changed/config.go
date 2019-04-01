@@ -22,8 +22,8 @@ import (
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 )
 
-func GetMultihashChangedConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
+func GetMultihashChangedConfig() shared_t.EventTransformerConfig {
+	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.MultihashChangedLabel,
 		ContractAddresses:   []string{constants.ResolverContractAddress()}, // append newly found resolver addresses to this slice as we find them emitted from NewResolver events
 		ContractAbi:         constants.ResolverABI(),

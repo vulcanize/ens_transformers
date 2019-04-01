@@ -389,20 +389,33 @@
   revision = "b001fa50d6b27f3f0bb175a87d0cb55426d0a0ae"
 
 [[projects]]
-  branch = "compose_and_execute"
-  digest = "1:295563788cd3dc78105c79844f99801cbac9ac4a384bb931e2cc692651366d49"
+  branch = "staging"
+  digest = "1:4aaefed0598b04625845b9a1e1b064da1273a5c72443977188565c4911d06010"
   name = "github.com/vulcanize/vulcanizedb"
   packages = [
     "libraries/shared/chunker",
     "libraries/shared/constants",
-    "libraries/shared/factories",
+    "libraries/shared/factories/event",
     "libraries/shared/fetcher",
     "libraries/shared/repository",
     "libraries/shared/storage",
     "libraries/shared/storage/utils",
+    "libraries/shared/transactions",
     "libraries/shared/transformer",
     "libraries/shared/watcher",
     "pkg/config",
+    "pkg/contract_watcher/light/converter",
+    "pkg/contract_watcher/light/fetcher",
+    "pkg/contract_watcher/light/repository",
+    "pkg/contract_watcher/light/retriever",
+    "pkg/contract_watcher/shared/constants",
+    "pkg/contract_watcher/shared/contract",
+    "pkg/contract_watcher/shared/fetcher",
+    "pkg/contract_watcher/shared/getter",
+    "pkg/contract_watcher/shared/helpers",
+    "pkg/contract_watcher/shared/helpers/test_helpers/mocks",
+    "pkg/contract_watcher/shared/parser",
+    "pkg/contract_watcher/shared/types",
     "pkg/core",
     "pkg/datastore",
     "pkg/datastore/postgres",
@@ -415,27 +428,14 @@
     "pkg/geth/converters/common",
     "pkg/geth/converters/rpc",
     "pkg/geth/node",
-    "pkg/omni/light/converter",
-    "pkg/omni/light/fetcher",
-    "pkg/omni/light/repository",
-    "pkg/omni/light/retriever",
-    "pkg/omni/shared/constants",
-    "pkg/omni/shared/contract",
-    "pkg/omni/shared/fetcher",
-    "pkg/omni/shared/getter",
-    "pkg/omni/shared/helpers",
-    "pkg/omni/shared/helpers/test_helpers/mocks",
-    "pkg/omni/shared/parser",
-    "pkg/omni/shared/types",
     "pkg/plugin",
     "pkg/plugin/builder",
     "pkg/plugin/helpers",
     "pkg/plugin/manager",
-    "pkg/plugin/test_helpers",
     "pkg/plugin/writer",
   ]
   pruneopts = ""
-  revision = "d92b92140afdc25e370ed09b69ad1bc2c5270248"
+  revision = "1c1318c96a3775949772e80db306b5a9492cbf0d"
   source = "github.com/vulcanize/maker-vulcanizedb"
 
 [[projects]]
@@ -563,12 +563,23 @@
     "github.com/sirupsen/logrus",
     "github.com/spf13/viper",
     "github.com/vulcanize/vulcanizedb/libraries/shared/constants",
-    "github.com/vulcanize/vulcanizedb/libraries/shared/factories",
+    "github.com/vulcanize/vulcanizedb/libraries/shared/factories/event",
     "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher",
     "github.com/vulcanize/vulcanizedb/libraries/shared/repository",
     "github.com/vulcanize/vulcanizedb/libraries/shared/transformer",
     "github.com/vulcanize/vulcanizedb/libraries/shared/watcher",
     "github.com/vulcanize/vulcanizedb/pkg/config",
+    "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/light/converter",
+    "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/light/fetcher",
+    "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/light/repository",
+    "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/light/retriever",
+    "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/constants",
+    "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/contract",
+    "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/getter",
+    "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/helpers",
+    "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/helpers/test_helpers/mocks",
+    "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/parser",
+    "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/types",
     "github.com/vulcanize/vulcanizedb/pkg/core",
     "github.com/vulcanize/vulcanizedb/pkg/datastore",
     "github.com/vulcanize/vulcanizedb/pkg/datastore/postgres",
@@ -578,20 +589,8 @@
     "github.com/vulcanize/vulcanizedb/pkg/geth/client",
     "github.com/vulcanize/vulcanizedb/pkg/geth/converters/rpc",
     "github.com/vulcanize/vulcanizedb/pkg/geth/node",
-    "github.com/vulcanize/vulcanizedb/pkg/omni/light/converter",
-    "github.com/vulcanize/vulcanizedb/pkg/omni/light/fetcher",
-    "github.com/vulcanize/vulcanizedb/pkg/omni/light/repository",
-    "github.com/vulcanize/vulcanizedb/pkg/omni/light/retriever",
-    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/constants",
-    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/contract",
-    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/getter",
-    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/helpers",
-    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/helpers/test_helpers/mocks",
-    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/parser",
-    "github.com/vulcanize/vulcanizedb/pkg/omni/shared/types",
     "github.com/vulcanize/vulcanizedb/pkg/plugin",
     "github.com/vulcanize/vulcanizedb/pkg/plugin/helpers",
-    "github.com/vulcanize/vulcanizedb/pkg/plugin/test_helpers",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
 	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 
 	"github.com/vulcanize/ens_transformers/transformers/registar/hash_invalidated"
 )
 
-var TransformerInitializer transformer.TransformerInitializer = factories.Transformer{
+var EventTransformerInitializer transformer.EventTransformerInitializer = event.Transformer{
 	Config:     hash_invalidated.GetHashInvalidatedConfig(),
 	Converter:  hash_invalidated.HashInvalidatedConverter{},
 	Repository: &hash_invalidated.HashInvalidatedRepository{},

@@ -56,20 +56,20 @@ func getEnvironmentInt64(key string) int64 {
 }
 
 // Getters for contract addresses from environment files
-func RegistryContractAddress() string { return getEnvironmentString("contract.address.ensRegistry") }
-func RegistarContractAddress() string { return getEnvironmentString("contract.address.ensRegistar") }
-func ResolverContractAddress() string { return getEnvironmentString("contract.address.ensResolver") }
+func RegistryContractAddress() string { return getEnvironmentString("contract.address.registry") }
+func RegistarContractAddress() string { return getEnvironmentString("contract.address.registar") }
+func ResolverContractAddress() string { return getEnvironmentString("contract.address.resolver") }
 
-func RegistryABI() string { return getEnvironmentString("contract.abi.ensRegistry") }
-func RegistarABI() string { return getEnvironmentString("contract.abi.ensRegistar") }
-func ResolverABI() string { return getEnvironmentString("contract.abi.ensResolver") }
+func RegistryABI() string { return getEnvironmentString("contract.abi.registry") }
+func RegistarABI() string { return getEnvironmentString("contract.abi.registar") }
+func ResolverABI() string { return getEnvironmentString("contract.abi.resolver") }
 
 func RegistryDeploymentBlock() int64 {
-	return getEnvironmentInt64("contract.deployment-block.ensRegistry")
+	return getEnvironmentInt64("contract.deployment-block.registry")
 }
 func RegistarDeploymentBlock() int64 {
-	return getEnvironmentInt64("contract.deployment-block.ensRegistar")
+	return getEnvironmentInt64("contract.deployment-block.registar")
 }
 func ResolverDeploymentBlock() int64 {
-	return getEnvironmentInt64("contract.deployment-block.ensResolver")
+	return getEnvironmentInt64("contract.deployment-block.resolver")
 }

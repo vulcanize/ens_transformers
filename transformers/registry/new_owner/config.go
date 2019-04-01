@@ -22,8 +22,8 @@ import (
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 )
 
-func GetNewOwnerConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
+func GetNewOwnerConfig() shared_t.EventTransformerConfig {
+	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.NewOwnerLabel,
 		ContractAddresses:   []string{constants.RegistryContractAddress()},
 		ContractAbi:         constants.RegistryABI(),

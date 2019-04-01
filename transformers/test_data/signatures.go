@@ -16,7 +16,7 @@
 
 package test_data
 
-import "github.com/vulcanize/vulcanizedb/pkg/omni/shared/helpers"
+import "github.com/vulcanize/vulcanizedb/pkg/contract_watcher/shared/helpers"
 
 var (
 	// Resolver

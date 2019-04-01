@@ -23,7 +23,7 @@ event ContenthashChanged(bytes32 indexed node, bytes hash);
 
 To populate ENS domain records in a Postgres table of this form:
 ```postgresql
-CREATE TABLE public.domain_records (
+CREATE TABLE ens.domain_records (
   id                    SERIAL PRIMARY KEY,
   block_number          BIGINT NOT NULL,
   name_hash             VARCHAR(66) NOT NULL,

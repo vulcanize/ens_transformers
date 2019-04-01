@@ -17,24 +17,21 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
-
 	"github.com/vulcanize/ens_transformers/test_config"
 	"github.com/vulcanize/ens_transformers/transformers/registry/new_resolver"
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 	"github.com/vulcanize/ens_transformers/transformers/test_data"
+	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var testNewResolverConfig = transformer.TransformerConfig{
+var testNewResolverConfig = transformer.EventTransformerConfig{
 	TransformerName:     constants.NewResolverLabel,
 	ContractAddresses:   []string{test_data.RegistryAddress},
 	ContractAbi:         test_data.RegistryAbi,
@@ -45,7 +42,7 @@ var testNewResolverConfig = transformer.TransformerConfig{
 
 var _ = Describe("NewResolver Transformer", func() {
 	It("fetches and transforms a NewResolver event from mainnet chain", func() {
-		blockNumber := int64(8956422)
+		blockNumber := int64(7483567)
 		config := testNewResolverConfig
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -56,12 +53,12 @@ var _ = Describe("NewResolver Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &new_resolver.NewResolverConverter{},
 			Repository: &new_resolver.NewResolverRepository{},
@@ -83,30 +80,25 @@ var _ = Describe("NewResolver Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(dbResult)).To(Equal(1))
 		res := dbResult[0]
-		Expect(res.Node).To(Equal("0000"))
-		Expect(res.Resolver).To(Equal(""))
+		Expect(res.Node).To(Equal("0xbb87bd9021ba9da3248899e6fdd901a68efb0e15ac691ac9ce5cc88ebcb306de"))
+		Expect(res.Resolver).To(Equal("0xD3ddcCDD3b25A8a7423B5bEe360a42146eb4Baf3"))
 	})
 
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.RegistryAddress)
-		abi, err := geth.ParseAbi(test_data.RegistryAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &new_resolver.NewResolverEntity{}
-
+		converter := new_resolver.NewResolverConverter{}
 		var eventLog = test_data.EthNewResolverLog
-
-		err = contract.UnpackLog(entity, "NewResolver", eventLog)
+		entities, err := converter.ToEntities(test_data.RegistryAbi, []types.Log{eventLog})
 		Expect(err).NotTo(HaveOccurred())
-
+		Expect(len(entities)).To(Equal(1))
+		entity, ok := entities[0].(new_resolver.NewResolverEntity)
+		Expect(ok).To(Equal(true))
 		expectedEntity := test_data.NewResolverEntity
 		Expect(entity.Node).To(Equal(expectedEntity.Node))
 		Expect(entity.Resolver).To(Equal(expectedEntity.Resolver))
 	})
 
 	It("rechecks header for new_resolver event", func() {
-		blockNumber := int64(8956422)
+		blockNumber := int64(7483567)
 		config := testNewResolverConfig
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -117,12 +109,12 @@ var _ = Describe("NewResolver Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &new_resolver.NewResolverConverter{},
 			Repository: &new_resolver.NewResolverRepository{},
@@ -151,23 +143,5 @@ var _ = Describe("NewResolver Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(new_resolverChecked[0]).To(Equal(2))
-	})
-
-	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.RegistryAddress)
-		abi, err := geth.ParseAbi(test_data.RegistryAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &new_resolver.NewResolverEntity{}
-
-		var eventLog = test_data.EthNewResolverLog
-
-		err = contract.UnpackLog(entity, "NewResolver", eventLog)
-		Expect(err).NotTo(HaveOccurred())
-
-		expectedEntity := test_data.NewResolverEntity
-		Expect(entity.Node).To(Equal(expectedEntity.Node))
-		Expect(entity.Resolver).To(Equal(expectedEntity.Resolver))
 	})
 })

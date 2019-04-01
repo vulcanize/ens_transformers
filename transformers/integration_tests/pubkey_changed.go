@@ -17,24 +17,21 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
-
 	"github.com/vulcanize/ens_transformers/test_config"
 	"github.com/vulcanize/ens_transformers/transformers/resolver/pubkey_changed"
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 	"github.com/vulcanize/ens_transformers/transformers/test_data"
+	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var testPubkeyChangedConfig = transformer.TransformerConfig{
+var testPubkeyChangedConfig = transformer.EventTransformerConfig{
 	TransformerName:     constants.PubkeyChangedLabel,
 	ContractAddresses:   []string{test_data.ResolverAddress},
 	ContractAbi:         test_data.CompleteResolverAbi,
@@ -44,8 +41,8 @@ var testPubkeyChangedConfig = transformer.TransformerConfig{
 }
 
 var _ = Describe("PubkeyChanged Transformer", func() {
-	It("fetches and transforms a PubkeyChanged event from mainnet chain", func() {
-		blockNumber := int64(8956422)
+	XIt("fetches and transforms a PubkeyChanged event from mainnet chain", func() {
+		blockNumber := int64(7341716)
 		config := testPubkeyChangedConfig
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -56,12 +53,12 @@ var _ = Describe("PubkeyChanged Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &pubkey_changed.PubkeyChangedConverter{},
 			Repository: &pubkey_changed.PubkeyChangedRepository{},
@@ -83,25 +80,20 @@ var _ = Describe("PubkeyChanged Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(dbResult)).To(Equal(1))
 		res := dbResult[0]
-		Expect(res.X).To(Equal("0000"))
-		Expect(res.Y).To(Equal("0000"))
-		Expect(res.Resolver).To(Equal(""))
-		Expect(res.Node).To(Equal(""))
+		Expect(res.X).To(Equal("0x952e25626ff3bb77e2c896c259362efcb621b96aed268faacfbd1e6d7a539f9b"))
+		Expect(res.Y).To(Equal("0x3102b2896ee73d9b52ff39c72f007b46b38d8e9c142dcaf0648d9b46fb81cd77"))
+		Expect(res.Resolver).To(Equal("0x5FfC014343cd971B7eb70732021E26C35B744cc4"))
+		Expect(res.Node).To(Equal("0x9db381b3596a1d14e5afa113274537bd5043c8a6a84d3df7cc791a00e408231d"))
 	})
 
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.ResolverAddress)
-		abi, err := geth.ParseAbi(test_data.CompleteResolverAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &pubkey_changed.PubkeyChangedEntity{}
-
+		converter := pubkey_changed.PubkeyChangedConverter{}
 		var eventLog = test_data.EthPubkeyChangedLog
-
-		err = contract.UnpackLog(entity, "PubkeyChanged", eventLog)
+		entities, err := converter.ToEntities(test_data.CompleteResolverAbi, []types.Log{eventLog})
 		Expect(err).NotTo(HaveOccurred())
-
+		Expect(len(entities)).To(Equal(1))
+		entity, ok := entities[0].(pubkey_changed.PubkeyChangedEntity)
+		Expect(ok).To(Equal(true))
 		expectedEntity := test_data.PubkeyChangedEntity
 		Expect(entity.X).To(Equal(expectedEntity.X))
 		Expect(entity.Y).To(Equal(expectedEntity.Y))
@@ -109,8 +101,8 @@ var _ = Describe("PubkeyChanged Transformer", func() {
 		Expect(entity.Resolver).To(Equal(expectedEntity.Resolver))
 	})
 
-	It("rechecks header for pubkey_changed event", func() {
-		blockNumber := int64(8956422)
+	XIt("rechecks header for pubkey_changed event", func() {
+		blockNumber := int64(7341716)
 		config := testPubkeyChangedConfig
 		config.StartingBlockNumber = blockNumber
 		config.EndingBlockNumber = blockNumber
@@ -121,12 +113,12 @@ var _ = Describe("PubkeyChanged Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &pubkey_changed.PubkeyChangedConverter{},
 			Repository: &pubkey_changed.PubkeyChangedRepository{},
@@ -155,25 +147,5 @@ var _ = Describe("PubkeyChanged Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(pubkey_changedChecked[0]).To(Equal(2))
-	})
-
-	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.ResolverAddress)
-		abi, err := geth.ParseAbi(test_data.CompleteResolverAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &pubkey_changed.PubkeyChangedEntity{}
-
-		var eventLog = test_data.EthPubkeyChangedLog
-
-		err = contract.UnpackLog(entity, "PubkeyChanged", eventLog)
-		Expect(err).NotTo(HaveOccurred())
-
-		expectedEntity := test_data.PubkeyChangedEntity
-		Expect(entity.X).To(Equal(expectedEntity.X))
-		Expect(entity.Y).To(Equal(expectedEntity.Y))
-		Expect(entity.Node).To(Equal(expectedEntity.Node))
-		Expect(entity.Resolver).To(Equal(expectedEntity.Resolver))
 	})
 })

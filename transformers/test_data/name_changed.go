@@ -36,7 +36,7 @@ const (
 
 var (
 	nameChangedRawJson, _ = json.Marshal(EthNameChangedLog)
-	name = "issuerName"
+	name                  = "issuerName"
 )
 
 var EthNameChangedLog = types.Log{

@@ -32,9 +32,9 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/datastore/postgres/repositories"
 	p2 "github.com/vulcanize/vulcanizedb/pkg/plugin"
 	"github.com/vulcanize/vulcanizedb/pkg/plugin/helpers"
-	"github.com/vulcanize/vulcanizedb/pkg/plugin/test_helpers"
 
 	"github.com/vulcanize/ens_transformers/test_config"
+	"github.com/vulcanize/ens_transformers/transformers/domain_records/test_helpers"
 )
 
 var eventConfig = config.Plugin{
@@ -74,7 +74,7 @@ var dbConfig = config.Database{
 }
 
 type Exporter interface {
-	Export() ([]transformer.TransformerInitializer, []transformer.StorageTransformerInitializer)
+	Export() ([]transformer.EventTransformerInitializer, []transformer.StorageTransformerInitializer, []transformer.ContractTransformerInitializer)
 }
 
 var _ = Describe("Plugin test", func() {
@@ -110,7 +110,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 				exporter, ok := symExporter.(Exporter)
 				Expect(ok).To(Equal(true))
-				initializers, store := exporter.Export()
+				initializers, store, _ := exporter.Export()
 				Expect(len(initializers)).To(Equal(3))
 				Expect(len(store)).To(Equal(0))
 			})
@@ -120,7 +120,7 @@ var _ = Describe("Plugin test", func() {
 				defer test_config.CleanTestDB(db)
 
 				hr = repositories.NewHeaderRepository(db)
-				header1, err := bc.GetHeaderByNumber(9377319)
+				header1, err := bc.GetHeaderByNumber(7483567)
 				Expect(err).ToNot(HaveOccurred())
 				headerID, err = hr.CreateOrUpdateHeader(header1)
 				Expect(err).ToNot(HaveOccurred())
@@ -131,7 +131,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(err).ToNot(HaveOccurred())
 				exporter, ok := symExporter.(Exporter)
 				Expect(ok).To(Equal(true))
-				initializers, _ := exporter.Export()
+				initializers, _, _ := exporter.Export()
 
 				w := watcher.NewEventWatcher(db, bc)
 				w.AddTransformers(initializers)
@@ -154,12 +154,12 @@ var _ = Describe("Plugin test", func() {
 
 				err = db.Get(&returned, `SELECT * FROM ens.new_owner WHERE header_id = $1`, headerID)
 				Expect(err).ToNot(HaveOccurred())
-				Expect(returned.Node).To(Equal("0000000000000000000000000000d8b4147eda80fec7122ae16da2479cbd7ffb"))
-				Expect(returned.Label).To(Equal("80000000000000000000"))
-				Expect(returned.Owner).To(Equal("11000000000000000000000"))
-				Expect(returned.Subnode).To(Equal("12496609999999999999992"))
-				Expect(returned.TransactionIndex).To(Equal(uint(1)))
-				Expect(returned.LogIndex).To(Equal(uint(4)))
+				Expect(returned.Node).To(Equal("0x79aa1ec377dbfd1edf87d526cd5c116ac6ec4444e23da2a8b8ae0e9db9f46ec9"))
+				Expect(returned.Label).To(Equal("0xf06ea683845d8994338d98e7296850612317647cdb1db3d1051f24bafdefe9f7"))
+				Expect(returned.Owner).To(Equal("0xA964ed4077aD3ba1946D118ce90544657bB4003B"))
+				Expect(returned.Subnode).To(Equal("0xbb87bd9021ba9da3248899e6fdd901a68efb0e15ac691ac9ce5cc88ebcb306de"))
+				Expect(returned.TransactionIndex).To(Equal(uint(50)))
+				Expect(returned.LogIndex).To(Equal(uint(78)))
 			})
 		})
 	})

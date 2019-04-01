@@ -32,7 +32,7 @@
 [[constraint]]
   name = "github.com/vulcanize/vulcanizedb"
   source = "github.com/vulcanize/maker-vulcanizedb"
-  branch = "compose_and_execute"
+  branch = "staging"
 
 [[constraint]]
   name = "github.com/sirupsen/logrus"
@@ -44,4 +44,4 @@
 
 [[constraint]]
   name = "github.com/ethereum/go-ethereum"
-  version = "1.8.21"
+  version = "1.8.23"

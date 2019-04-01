@@ -22,8 +22,8 @@ import (
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 )
 
-func GetHashReleasedConfig() shared_t.TransformerConfig {
-	return shared_t.TransformerConfig{
+func GetHashReleasedConfig() shared_t.EventTransformerConfig {
+	return shared_t.EventTransformerConfig{
 		TransformerName:     constants.HashReleasedLabel,
 		ContractAddresses:   []string{constants.RegistarContractAddress()},
 		ContractAbi:         constants.RegistarABI(),

@@ -70,10 +70,20 @@ func setInfuraConfig() {
 	Infura.SetConfigName("infura")
 	Infura.AddConfigPath("$GOPATH/src/github.com/vulcanize/ens_transformers/environments/")
 	err := Infura.ReadInConfig()
-	ipc := Infura.GetString("client.ipcpath")
 	if err != nil {
 		log.Fatal(err)
 	}
+	ipc := Infura.GetString("client.ipcpath")
+
+	// If we don't have an ipc path in the config file, check the env variable
+	if ipc == "" {
+		Infura.BindEnv("url", "INFURA_URL")
+		ipc = Infura.GetString("url")
+	}
+	if ipc == "" {
+		log.Fatal("infura.toml IPC path or $INFURA_URL env variable need to be set")
+	}
+
 	InfuraClient = config.Client{
 		IPCPath: ipc,
 	}
@@ -99,7 +109,8 @@ func CleanTestDB(db *postgres.DB) {
 	db.MustExec("DELETE FROM log_filters")
 	db.MustExec("DELETE FROM logs")
 	db.MustExec("DELETE FROM receipts")
-	db.MustExec("DELETE FROM transactions")
+	db.MustExec("DELETE FROM light_sync_transactions")
+	db.MustExec("DELETE FROM full_sync_transactions")
 	db.MustExec("DELETE FROM watched_contracts")
 	db.MustExec("DELETE FROM ens.auction_started")
 	db.MustExec("DELETE FROM ens.bid_revealed")

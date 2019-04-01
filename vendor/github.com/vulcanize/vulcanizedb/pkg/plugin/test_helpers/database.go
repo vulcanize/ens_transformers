@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -31,6 +31,7 @@ import (
 	"github.com/vulcanize/vulcanizedb/pkg/geth/node"
 )
 
+// TODO: consider whether this should be moved to libraries/shared
 func SetupDBandBC() (*postgres.DB, core.BlockChain) {
 	infuraIPC := "http://kovan0.vulcanize.io:8545"
 	rawRpcClient, err := rpc.Dial(infuraIPC)
@@ -38,9 +39,9 @@ func SetupDBandBC() (*postgres.DB, core.BlockChain) {
 	rpcClient := client.NewRpcClient(rawRpcClient, infuraIPC)
 	ethClient := ethclient.NewClient(rawRpcClient)
 	blockChainClient := client.NewEthClient(ethClient)
-	node := node.MakeNode(rpcClient)
+	blockChainNode := node.MakeNode(rpcClient)
 	transactionConverter := rpc2.NewRpcTransactionConverter(ethClient)
-	blockChain := geth.NewBlockChain(blockChainClient, rpcClient, node, transactionConverter)
+	blockChain := geth.NewBlockChain(blockChainClient, rpcClient, blockChainNode, transactionConverter)
 
 	db, err := postgres.NewDB(config.Database{
 		Hostname: "localhost",
@@ -53,7 +54,7 @@ func SetupDBandBC() (*postgres.DB, core.BlockChain) {
 }
 
 func TearDown(db *postgres.DB) {
-	tx, err := db.Begin()
+	tx, err := db.Beginx()
 	Expect(err).NotTo(HaveOccurred())
 
 	_, err = tx.Exec(`DELETE FROM headers`)
@@ -65,7 +66,10 @@ func TearDown(db *postgres.DB) {
 	_, err = tx.Exec(`DELETE FROM log_filters`)
 	Expect(err).NotTo(HaveOccurred())
 
-	_, err = tx.Exec(`DELETE FROM transactions`)
+	_, err = tx.Exec(`DELETE FROM full_sync_transactions`)
+	Expect(err).NotTo(HaveOccurred())
+
+	_, err = tx.Exec("DELETE FROM light_sync_transactions")
 	Expect(err).NotTo(HaveOccurred())
 
 	_, err = tx.Exec(`DELETE FROM receipts`)

@@ -17,24 +17,21 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/factories"
-	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
-	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
-	"github.com/vulcanize/vulcanizedb/pkg/geth"
-
 	"github.com/vulcanize/ens_transformers/test_config"
 	"github.com/vulcanize/ens_transformers/transformers/registry/new_ttl"
 	"github.com/vulcanize/ens_transformers/transformers/shared/constants"
 	"github.com/vulcanize/ens_transformers/transformers/test_data"
+	c2 "github.com/vulcanize/vulcanizedb/libraries/shared/constants"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/factories/event"
+	fetch "github.com/vulcanize/vulcanizedb/libraries/shared/fetcher"
+	"github.com/vulcanize/vulcanizedb/libraries/shared/transformer"
 )
 
-var testNewTtlConfig = transformer.TransformerConfig{
+var testNewTtlConfig = transformer.EventTransformerConfig{
 	TransformerName:     constants.NewTtlLabel,
 	ContractAddresses:   []string{test_data.RegistryAddress},
 	ContractAbi:         test_data.RegistryAbi,
@@ -44,7 +41,7 @@ var testNewTtlConfig = transformer.TransformerConfig{
 }
 
 var _ = Describe("NewTtl Transformer", func() {
-	It("fetches and transforms a NewTtl event from mainnet chain", func() {
+	XIt("fetches and transforms a NewTtl event from mainnet chain", func() {
 		blockNumber := int64(8956422)
 		config := testNewTtlConfig
 		config.StartingBlockNumber = blockNumber
@@ -56,12 +53,12 @@ var _ = Describe("NewTtl Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &new_ttl.NewTtlConverter{},
 			Repository: &new_ttl.NewTtlRepository{},
@@ -88,24 +85,19 @@ var _ = Describe("NewTtl Transformer", func() {
 	})
 
 	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.RegistryAddress)
-		abi, err := geth.ParseAbi(test_data.RegistryAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &new_ttl.NewTTLEntity{}
-
+		converter := new_ttl.NewTtlConverter{}
 		var eventLog = test_data.EthNewTtlLog
-
-		err = contract.UnpackLog(entity, "NewTTL", eventLog)
+		entities, err := converter.ToEntities(test_data.RegistryAbi, []types.Log{eventLog})
 		Expect(err).NotTo(HaveOccurred())
-
+		Expect(len(entities)).To(Equal(1))
+		entity, ok := entities[0].(new_ttl.NewTTLEntity)
+		Expect(ok).To(Equal(true))
 		expectedEntity := test_data.NewTtlEntity
 		Expect(entity.Node).To(Equal(expectedEntity.Node))
 		Expect(entity.Ttl).To(Equal(expectedEntity.Ttl))
 	})
 
-	It("rechecks header for new_ttl event", func() {
+	XIt("rechecks header for new_ttl event", func() {
 		blockNumber := int64(8956422)
 		config := testNewTtlConfig
 		config.StartingBlockNumber = blockNumber
@@ -117,12 +109,12 @@ var _ = Describe("NewTtl Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		db := test_config.NewTestDB(blockChain.Node())
-		test_config.CleanTestDB(db)
+		defer test_config.CleanTestDB(db)
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
-		initializer := factories.Transformer{
+		initializer := event.Transformer{
 			Config:     config,
 			Converter:  &new_ttl.NewTtlConverter{},
 			Repository: &new_ttl.NewTtlRepository{},
@@ -151,23 +143,5 @@ var _ = Describe("NewTtl Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(new_ttlChecked[0]).To(Equal(2))
-	})
-
-	It("unpacks an event log", func() {
-		address := common.HexToAddress(test_data.RegistryAddress)
-		abi, err := geth.ParseAbi(test_data.RegistryAbi)
-		Expect(err).NotTo(HaveOccurred())
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		entity := &new_ttl.NewTTLEntity{}
-
-		var eventLog = test_data.EthNewTtlLog
-
-		err = contract.UnpackLog(entity, "NewTTL", eventLog)
-		Expect(err).NotTo(HaveOccurred())
-
-		expectedEntity := test_data.NewTtlEntity
-		Expect(entity.Node).To(Equal(expectedEntity.Node))
-		Expect(entity.Ttl).To(Equal(expectedEntity.Ttl))
 	})
 })

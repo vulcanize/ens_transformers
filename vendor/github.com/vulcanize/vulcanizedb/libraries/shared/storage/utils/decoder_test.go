@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -31,6 +31,17 @@ var _ = Describe("Storage decoder", func() {
 		fakeInt := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000539")
 		row := utils.StorageDiffRow{StorageValue: fakeInt}
 		metadata := utils.StorageValueMetadata{Type: utils.Uint256}
+
+		result, err := utils.Decode(row, metadata)
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(result).To(Equal(big.NewInt(0).SetBytes(fakeInt.Bytes()).String()))
+	})
+
+	It("decodes uint48", func() {
+		fakeInt := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000123")
+		row := utils.StorageDiffRow{StorageValue: fakeInt}
+		metadata := utils.StorageValueMetadata{Type: utils.Uint48}
 
 		result, err := utils.Decode(row, metadata)
 

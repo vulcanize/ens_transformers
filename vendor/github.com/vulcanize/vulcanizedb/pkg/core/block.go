@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2018 Vulcanize
+// Copyright © 2019 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,7 @@ type Block struct {
 	ParentHash   string  `db:"parenthash"`
 	Size         string  `db:"size"`
 	Time         int64   `db:"time"`
-	Transactions []Transaction
+	Transactions []TransactionModel
 	UncleHash    string  `db:"uncle_hash"`
 	UnclesReward float64 `db:"uncles_reward"`
 }
