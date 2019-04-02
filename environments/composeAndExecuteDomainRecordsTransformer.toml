@@ -1,0 +1,21 @@
+[database]
+    name     = "vulcanize_public"
+    hostname = "localhost"
+    port     = 5432
+
+[client]
+    ipcPath  = ""
+
+[exporter]
+    home     = "github.com/vulcanize/vulcanizedb"
+    name     = "ENSDomainRecordsTransformerExporter"
+    save     = false
+    transformerNames = [
+        "domain_records"
+    ]
+    [exporter.domain_records]
+        path = "transformers/domain_records/initializer/mainnet"
+        type = "eth_contract"
+        repository = "github.com/vulcanize/ens_transformers"
+        migrations = "db/migrations"
+        rank = "0"
