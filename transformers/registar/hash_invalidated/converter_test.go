@@ -73,7 +73,7 @@ var _ = Describe("HashInvalidated Converter", func() {
 			var temp *big.Int
 			expectedModel := hash_invalidated.HashInvalidatedModel{
 				Hash:             "0x0000000000000000000000000000000000000000000000000000000000000000",
-				Name:             "",
+				Name:             "0x0000000000000000000000000000000000000000000000000000000000000000",
 				Value:            temp.String(),
 				RegistrationDate: temp.String(),
 				TransactionIndex: 0,

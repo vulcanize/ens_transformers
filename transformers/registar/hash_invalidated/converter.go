@@ -50,7 +50,7 @@ func (HashInvalidatedConverter) ToEntities(contractAbi string, ethLogs []types.L
 
 		entity.Hash = common.BytesToHash(intermediateMap["hash"].([]uint8))
 		entity.Value = intermediateMap["value"].(*big.Int)
-		entity.Name = intermediateMap["name"].(string)
+		entity.Name = intermediateMap["name"].(common.Hash)
 		entity.RegistrationDate = intermediateMap["registrationDate"].(*big.Int)
 		entity.Raw = ethLog
 		entity.LogIndex = ethLog.Index
@@ -79,7 +79,7 @@ func (converter HashInvalidatedConverter) ToModels(entities []interface{}) ([]in
 
 		model := HashInvalidatedModel{
 			Hash:             hashEntity.Hash.Hex(),
-			Name:             hashEntity.Name,
+			Name:             hashEntity.Name.Hex(),
 			Value:            hashEntity.Value.String(),
 			RegistrationDate: hashEntity.RegistrationDate.String(),
 			LogIndex:         logIdx,

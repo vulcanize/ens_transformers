@@ -25,7 +25,7 @@ import (
 
 type HashInvalidatedEntity struct {
 	Hash             common.Hash
-	Name             string
+	Name             common.Hash
 	Value            *big.Int
 	RegistrationDate *big.Int
 	LogIndex         uint
