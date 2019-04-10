@@ -3,7 +3,7 @@ CREATE TABLE ens.hash_invalidated (
   id                SERIAL PRIMARY KEY,
   header_id         INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
   hash              CHARACTER VARYING(66) NOT NULL,
-  name              TEXT NOT NULL,
+  name              CHARACTER VARYING(66) NOT NULL,
   value             NUMERIC NOT NULL,
   registration_date NUMERIC NOT NULL,
   tx_idx            INTEGER NOT NUll,
