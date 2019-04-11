@@ -1,6 +1,7 @@
 # [VulcanizeDB](https://github.com/vulcanize/vulcanizedb) Transformers for [ENS](https://ens.domains)
 
 [![Build Status](https://travis-ci.com/vulcanize/ens_transformers.svg?branch=master)](https://travis-ci.com/vulcanize/ens_transformers)
+[![Go Report Card](https://goreportcard.com/badge/github.com/vulcanize/ens_transformers)](https://goreportcard.com/report/github.com/vulcanize/ens_transformers)
 
 ## Description
 
