@@ -388,7 +388,6 @@
   revision = "b001fa50d6b27f3f0bb175a87d0cb55426d0a0ae"
 
 [[projects]]
-  branch = "master"
   digest = "1:9bf559730bf92c5663abe5db2f9e9d0e2962dae1c63f5adc4365057f3fd02180"
   name = "github.com/vulcanize/vulcanizedb"
   packages = [
@@ -435,6 +434,7 @@
   ]
   pruneopts = ""
   revision = "d41b011e07f829315c30f0a169ee01250df8bbb9"
+  version = "v0.0.1"
 
 [[projects]]
   digest = "1:59b49c47c11a48f1054529207f65907c014ecf5f9a7c0d9c0f1616dec7b062ed"
